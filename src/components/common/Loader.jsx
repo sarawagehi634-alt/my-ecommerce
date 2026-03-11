@@ -13,9 +13,16 @@ import {
   FiArrowUpRight,
   FiMapPin,
   FiPhone,
-  FiGlobe
+  FiGlobe,
 } from "react-icons/fi";
 import toast from "react-hot-toast";
+
+const CONTACT_INFO = {
+  phone: "+20 123 456 789",
+  location: "القليوبية، مصر",
+  language: "العربية",
+  currency: "EGP"
+};
 
 const Footer = () => {
   const [email, setEmail] = useState("");
@@ -26,8 +33,8 @@ const Footer = () => {
     if (!email) return toast.error("بريدك الإلكتروني يهمنا");
     setLoading(true);
     try {
-      // محاكاة الربط مع newsletterService
-      await new Promise(res => setTimeout(res, 1000));
+      // محاكاة الاشتراك
+      await new Promise((res) => setTimeout(res, 1000));
       toast.success("أهلاً بكِ في عالمنا");
       setEmail("");
     } catch {
@@ -44,7 +51,7 @@ const Footer = () => {
         { to: "/category/dresses", text: "فساتين السهرة" },
         { to: "/category/casual", text: "ملابس كاجوال" },
         { to: "/offers", text: "العروض الحصرية" },
-      ]
+      ],
     },
     support: {
       title: "المساعدة",
@@ -53,7 +60,7 @@ const Footer = () => {
         { to: "/shipping", text: "معلومات الشحن" },
         { to: "/returns", text: "سياسة الإرجاع" },
         { to: "/faq", text: "الأسئلة الشائعة" },
-      ]
+      ],
     },
     brand: {
       title: "عن سوو",
@@ -62,9 +69,11 @@ const Footer = () => {
         { to: "/sustainability", text: "الاستدامة" },
         { to: "/contact", text: "تواصل معنا" },
         { to: "/terms", text: "الشروط والأحكام" },
-      ]
-    }
+      ],
+    },
   };
+
+  const SOCIAL_ICONS = [FaInstagram, FaTiktok, FaPinterestP, FaFacebookF, FaWhatsapp];
 
   return (
     <footer className="bg-white border-t border-gray-100 text-gray-900 pt-20 pb-8">
@@ -73,6 +82,7 @@ const Footer = () => {
         {/* الجزء العلوي: براندنج واشتراك */}
         <div className="grid lg:grid-cols-12 gap-16 mb-20">
           
+          {/* Brand & Social */}
           <div className="lg:col-span-4 space-y-8">
             <Link to="/" className="inline-block">
                <h2 className="text-3xl font-black tracking-tighter uppercase italic">SOO STYLE</h2>
@@ -84,7 +94,7 @@ const Footer = () => {
             </p>
 
             <div className="flex gap-5">
-              {[FaInstagram, FaTiktok, FaPinterestP, FaFacebookF, FaWhatsapp].map((Icon, i) => (
+              {SOCIAL_ICONS.map((Icon, i) => (
                 <a key={i} href="#" className="text-gray-400 hover:text-black transition-colors duration-300">
                   <Icon size={18} />
                 </a>
@@ -113,7 +123,7 @@ const Footer = () => {
             ))}
           </div>
 
-          {/* النشرة البريدية بتصميم Modern */}
+          {/* النشرة البريدية */}
           <div className="lg:col-span-3">
              <h4 className="text-xs font-bold uppercase tracking-widest text-gray-900 mb-6 italic">اشتركي الآن</h4>
              <p className="text-xs text-gray-400 mb-6 leading-relaxed">
@@ -127,7 +137,7 @@ const Footer = () => {
                   placeholder="عنوان بريدك الإلكتروني"
                   className="w-full bg-transparent border-b border-gray-200 py-3 pr-2 pl-10 focus:border-black outline-none transition-all text-sm font-light"
                 />
-                <button className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors">
+                <button type="submit" className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors">
                   {loading ? "..." : <FiSend size={18} />}
                 </button>
              </form>
@@ -135,19 +145,19 @@ const Footer = () => {
 
         </div>
 
-        {/* الجزء السفلي: معلومات التواصل والحقوق */}
+        {/* الجزء السفلي */}
         <div className="pt-10 border-t border-gray-50">
           <div className="flex flex-wrap justify-between items-center gap-8">
             
             <div className="flex flex-wrap gap-8 text-[11px] text-gray-400 uppercase tracking-[0.15em] font-medium">
                <div className="flex items-center gap-2">
-                 <FiMapPin /> القليوبية، مصر
+                 <FiMapPin /> {CONTACT_INFO.location}
                </div>
                <div className="flex items-center gap-2">
                  <FiPhone /> {CONTACT_INFO.phone}
                </div>
                <div className="flex items-center gap-2">
-                 <FiGlobe /> العربية | EGP
+                 <FiGlobe /> {CONTACT_INFO.language} | {CONTACT_INFO.currency}
                </div>
             </div>
 
@@ -155,7 +165,6 @@ const Footer = () => {
                <p className="text-[11px] text-gray-400 uppercase tracking-widest">
                   © {new Date().getFullYear()} Soo Fashion. All Rights Reserved
                </p>
-               {/* طرق دفع بسيطة ونظيفة */}
                <div className="flex gap-4 opacity-20 grayscale text-[10px] font-black">
                   <span>VISA</span>
                   <span>MASTERCARD</span>
@@ -165,6 +174,7 @@ const Footer = () => {
 
           </div>
         </div>
+
       </div>
     </footer>
   );

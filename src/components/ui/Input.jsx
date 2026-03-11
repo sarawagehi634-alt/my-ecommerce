@@ -23,11 +23,9 @@ const Input = ({
   const isPassword = type === 'password';
   const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
 
-  /* تصميم الحقل: خطوط مستقيمة، بدون حواف دائرية مبالغ فيها، ألوان محايدة */
   const baseStyles =
     'w-full bg-transparent border-b-[1.5px] py-4 transition-all duration-500 outline-none text-sm tracking-wide font-light placeholder:text-gray-300 rounded-none';
 
-  /* حالة الخطأ مقابل الحالة الطبيعية (بدون Gradients) */
   const variantStyles = error
     ? 'border-red-500 focus:border-red-600'
     : isFocused 
@@ -36,7 +34,6 @@ const Input = ({
 
   return (
     <div className="w-full group space-y-2">
-      {/* Label: خط صغير، عريض، ومسافات واسعة بين الحروف */}
       {label && (
         <label
           htmlFor={inputId}
@@ -49,14 +46,12 @@ const Input = ({
       )}
 
       <div className="relative flex items-center">
-        {/* Left Icon */}
         {leftIcon && (
           <div className={`absolute right-0 transition-colors duration-300 ${isFocused ? 'text-black' : 'text-gray-300'}`}>
             {leftIcon}
           </div>
         )}
 
-        {/* Main Input */}
         <input
           id={inputId}
           type={inputType}
@@ -66,7 +61,6 @@ const Input = ({
           {...props}
         />
 
-        {/* Right Action: Password Toggle */}
         <div className="absolute left-0 flex items-center">
           {isPassword ? (
             <button
@@ -82,7 +76,6 @@ const Input = ({
         </div>
       </div>
 
-      {/* Error/Helper Message */}
       {(error || helper) && (
         <p className={`text-[10px] uppercase tracking-widest mt-1 ${error ? 'text-red-500 font-bold' : 'text-gray-400 italic'}`}>
           {error || helper}

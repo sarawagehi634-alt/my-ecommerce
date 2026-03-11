@@ -1,4 +1,5 @@
 // @ts-nocheck
+// src/context/CartContext.jsx
 import React, { createContext, useState, useContext, useEffect, useCallback, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import cartService from '../services/cartService';
@@ -17,11 +18,16 @@ export const CartProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const { isAuthenticated, initialized } = useAuth();
 
-  // 1. تحميل السلة بذكاء (LocalStorage أولاً لسرعة البرق)
   useEffect(() => {
     const saved = localStorage.getItem('bt_cart');
-    if (saved) setCartItems(JSON.parse(saved));
-    
+    if (saved) {
+      try {
+        setCartItems(JSON.parse(saved));
+      } catch {
+        localStorage.removeItem('bt_cart');
+      }
+    }
+
     if (initialized && isAuthenticated) {
       fetchCartFromAPI();
     } else {
@@ -36,14 +42,13 @@ export const CartProvider = ({ children }) => {
         setCartItems(response.data.items);
         localStorage.setItem('bt_cart', JSON.stringify(response.data.items));
       }
-    } catch (error) {
+    } catch {
       console.error('API Cart Load Failed');
     } finally {
       setLoading(false);
     }
   };
 
-  // 2. حسابات السلة (Memoized) عشان الأداء ميتأثرش مع كثرة القطع
   const { cartTotal, cartCount } = useMemo(() => {
     return cartItems.reduce((acc, item) => ({
       cartTotal: acc.cartTotal + (Number(item.price) * (item.quantity || 1)),
@@ -51,21 +56,17 @@ export const CartProvider = ({ children }) => {
     }), { cartTotal: 0, cartCount: 0 });
   }, [cartItems]);
 
-  // 3. المزامنة التلقائية (Auto-Save)
   useEffect(() => {
     localStorage.setItem('bt_cart', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // 4. العمليات الأساسية بتصميم "صامت" (No Global Loaders)
-  const addToCart = useCallback(async (product, quantity = 1) => {
-    // التحديث المحلي فوراً (Optimistic UI) ليكون الموقع سريع جداً
+  const addToCart = useCallback((product, quantity = 1) => {
     setCartItems(prev => {
       const exists = prev.find(i => i.id === product.id);
       const newItems = exists 
         ? prev.map(i => i.id === product.id ? { ...i, quantity: i.quantity + quantity } : i)
         : [...prev, { ...product, quantity }];
       
-      // مزامنة مع الـ API في الخلفية
       if (isAuthenticated) cartService.syncCart(newItems).catch(() => null);
       return newItems;
     });
@@ -80,8 +81,7 @@ export const CartProvider = ({ children }) => {
     setCartItems(prev => {
       const newItems = prev.map(item => {
         if (item.id === productId) {
-          const newQty = Math.max(1, item.quantity + delta);
-          return { ...item, quantity: newQty };
+          return { ...item, quantity: Math.max(1, item.quantity + delta) };
         }
         return item;
       });
@@ -99,19 +99,15 @@ export const CartProvider = ({ children }) => {
     toast.error('تم الحذف من السلة', { icon: '🗑️', style: { fontSize: '12px' } });
   }, [isAuthenticated]);
 
+  const clearCart = useCallback(() => {
+    setCartItems([]);
+    if (isAuthenticated) cartService.clearCart();
+  }, [isAuthenticated]);
+
   const value = useMemo(() => ({
-    cartItems,
-    cartTotal,
-    cartCount,
-    loading,
-    addToCart,
-    removeFromCart,
-    updateQuantity,
-    clearCart: () => {
-      setCartItems([]);
-      if (isAuthenticated) cartService.clearCart();
-    }
-  }), [cartItems, cartTotal, cartCount, loading, addToCart, removeFromCart, updateQuantity, isAuthenticated]);
+    cartItems, cartTotal, cartCount, loading,
+    addToCart, updateQuantity, removeFromCart, clearCart
+  }), [cartItems, cartTotal, cartCount, loading, addToCart, updateQuantity, removeFromCart, clearCart]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };

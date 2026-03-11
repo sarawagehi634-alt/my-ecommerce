@@ -1,5 +1,6 @@
+// PrivacyFashion.jsx
 import React, { useState, useEffect } from 'react';
-import { FiShield, FiLock, FiEye, FiDatabase, FiMail, FiClock } from 'react-icons/fi';
+import { FiShield, FiLock, FiEye, FiDatabase, FiMail } from 'react-icons/fi';
 import staticService from '../../services/staticService';
 import Loader from '../../components/common/Loader';
 import toast from 'react-hot-toast';
@@ -29,13 +30,11 @@ const PrivacyFashion = () => {
     }
   };
 
-  if (loading) {
-    return <Loader text="جاري تحميل سياسة الخصوصية..." />;
-  }
+  if (loading) return <Loader text="جاري تحميل سياسة الخصوصية..." />;
 
   return (
     <div className="min-h-screen py-12 bg-pink-50" dir="rtl">
-      <div className="container-custom max-w-4xl">
+      <div className="container mx-auto px-4 max-w-4xl">
         {/* عنوان الصفحة */}
         <div className="text-center mb-12">
           <div className="w-24 h-24 bg-gradient-to-br from-pink-500 to-pink-300 rounded-3xl mx-auto mb-4 flex items-center justify-center shadow-lg">
@@ -47,27 +46,28 @@ const PrivacyFashion = () => {
 
         {/* المحتوى الرئيسي */}
         {privacyContent ? (
-          <div 
+          <div
             className="bg-white rounded-3xl shadow-xl p-8 prose prose-pink prose-lg max-w-none"
             dangerouslySetInnerHTML={{ __html: privacyContent }}
           />
         ) : (
-          <div className="bg-white rounded-3xl shadow-xl p-8 space-y-8">
+          <div className="bg-white rounded-3xl shadow-xl p-8 space-y-10">
             {/* مقدمة */}
             <section className="border-b border-gray-200 pb-6">
               <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-pink-600">
-                <FiEye className="text-pink-600" aria-hidden="true" />
+                <FiEye aria-hidden="true" />
                 مقدمة
               </h2>
               <p className="text-gray-700 leading-relaxed">
-                نحن في <span className="font-bold text-pink-600">Soo Style Fashion</span> نلتزم بحماية خصوصيتك وأمان بياناتك الشخصية. توضح سياسة الخصوصية هذه كيفية جمع واستخدام وحماية المعلومات عند استخدام موقعنا الإلكتروني وخدماتنا.
+                نحن في <span className="font-bold text-pink-600">Soo Style Fashion</span> نلتزم بحماية خصوصيتك وأمان بياناتك الشخصية. 
+                توضح سياسة الخصوصية هذه كيفية جمع واستخدام وحماية المعلومات عند استخدام موقعنا الإلكتروني وخدماتنا.
               </p>
             </section>
 
             {/* المعلومات التي نجمعها */}
             <section className="border-b border-gray-200 pb-6">
               <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-pink-600">
-                <FiDatabase className="text-pink-600" aria-hidden="true" />
+                <FiDatabase aria-hidden="true" />
                 المعلومات التي نجمعها
               </h2>
               <ul className="list-disc list-inside text-gray-700 space-y-2 mr-4">
@@ -85,7 +85,7 @@ const PrivacyFashion = () => {
             {/* استخدام المعلومات */}
             <section className="border-b border-gray-200 pb-6">
               <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-pink-600">
-                <FiLock className="text-pink-600" aria-hidden="true" />
+                <FiLock aria-hidden="true" />
                 كيفية استخدام معلوماتك
               </h2>
               <ul className="list-disc list-inside text-gray-700 space-y-2 mr-4">
@@ -101,7 +101,7 @@ const PrivacyFashion = () => {
             {/* حماية البيانات */}
             <section className="border-b border-gray-200 pb-6">
               <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-pink-600">
-                <FiShield className="text-pink-600" aria-hidden="true" />
+                <FiShield aria-hidden="true" />
                 حماية البيانات
               </h2>
               <p className="text-gray-700 leading-relaxed mb-4">
@@ -118,7 +118,7 @@ const PrivacyFashion = () => {
             {/* التواصل معنا */}
             <section className="border-b border-gray-200 pb-6">
               <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-pink-600">
-                <FiMail className="text-pink-600" aria-hidden="true" />
+                <FiMail aria-hidden="true" />
                 التواصل معنا
               </h2>
               <div className="bg-pink-50 p-4 rounded-xl space-y-2">
@@ -131,7 +131,8 @@ const PrivacyFashion = () => {
             {/* الموافقة */}
             <div className="bg-pink-100 p-6 rounded-2xl mt-8 text-center">
               <p className="text-gray-800 font-medium">
-                باستخدامك لموقعنا، فإنك توافق على سياسة الخصوصية وشروط الاستخدام الخاصة بـ <span className="font-bold text-pink-600">Soo Style Fashion</span>.
+                باستخدامك لموقعنا، فإنك توافق على سياسة الخصوصية وشروط الاستخدام الخاصة بـ 
+                <span className="font-bold text-pink-600"> Soo Style Fashion</span>.
               </p>
             </div>
           </div>

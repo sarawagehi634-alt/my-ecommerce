@@ -1,3 +1,4 @@
+// ShippingFashion.jsx
 import React, { useState, useEffect } from 'react';
 import { FiTruck, FiPackage, FiClock, FiMapPin } from 'react-icons/fi';
 import { Link } from 'react-router-dom'; 
@@ -61,7 +62,12 @@ const ShippingFashion = () => {
                   <p className="text-gray-600">{method.description}</p>
                   <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-500">
                     <p><span className="font-medium">مدة التوصيل:</span> {method.duration}</p>
-                    <p><span className="font-medium">التكلفة:</span> {method.cost === 0 ? <span className="text-green-600 font-semibold">مجاني</span> : <span>{method.cost} ج.م</span>}</p>
+                    <p>
+                      <span className="font-medium">التكلفة:</span> 
+                      {method.cost === 0 
+                        ? <span className="text-green-600 font-semibold">مجاني</span> 
+                        : <span>{method.cost} ج.م</span>}
+                    </p>
                   </div>
                 </div>
               ))}

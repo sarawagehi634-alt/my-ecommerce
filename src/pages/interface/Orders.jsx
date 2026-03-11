@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import orderService from '../../services/orderService';
 import { useAuth } from '../../context/AuthContext';
 import Loader from '../../components/common/Loader';
-import { FiPackage, FiClock, FiCheckCircle, FiXCircle, FiTruck } from 'react-icons/fi';
+import { FiPackage, FiClock, FiCheckCircle, FiXCircle, FiTruck, FiArrowRight } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
 const STATUS_COLORS = {
@@ -136,6 +136,16 @@ const OrdersFashion = () => {
                       <p className="text-gray-600">
                         تاريخ الطلب: {formatDate(order.created_at)}
                       </p>
+
+                      {/* شريط حالة مختصر */}
+                      <div className="flex items-center mt-2 gap-1">
+                        {['pending', 'processing', 'shipped', 'delivered'].map((step, idx) => {
+                          const isCompleted = ['pending', 'processing', 'shipped', 'delivered'].indexOf(order.status) >= idx;
+                          return (
+                            <div key={idx} className={`flex-1 h-2 rounded-full ${isCompleted ? 'bg-purple-600' : 'bg-gray-300'}`} />
+                          );
+                        })}
+                      </div>
                     </div>
 
                     <div className="text-left">
@@ -176,7 +186,7 @@ const OrdersFashion = () => {
 
                   <div className="mt-4 flex items-center gap-2 text-sm text-purple-600 font-semibold">
                     <span>عرض التفاصيل</span>
-                    <FiPackage className="w-4 h-4" />
+                    <FiArrowRight className="w-4 h-4" />
                   </div>
                 </Link>
               );

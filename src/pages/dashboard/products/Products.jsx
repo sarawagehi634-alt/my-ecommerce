@@ -6,9 +6,6 @@ import { FaArrowLeft, FaShoppingCart } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 
-/**
- * صفحة عرض جميع المنتجات في قسم معين
- */
 const Products = () => {
   const { categoryId } = useParams();
   const [products, setProducts] = useState([]);
@@ -30,13 +27,9 @@ const Products = () => {
 
       if (response?.status) {
         let productsData = [];
-        if (Array.isArray(response.data)) {
-          productsData = response.data;
-        } else if (response.data?.data && Array.isArray(response.data.data)) {
-          productsData = response.data.data;
-        } else {
-          productsData = [];
-        }
+        if (Array.isArray(response.data)) productsData = response.data;
+        else if (response.data?.data && Array.isArray(response.data.data)) productsData = response.data.data;
+        else productsData = [];
         setProducts(productsData);
       } else {
         setError('حدث خطأ أثناء تحميل المنتجات');
@@ -50,14 +43,14 @@ const Products = () => {
     }
   };
 
-  const handleImageError = (e) => {
-    e.target.src = 'https://via.placeholder.com/400x400/800080/FFD700?text=Product';
-  };
-
   const getProductImage = (image) => {
     if (!image) return 'https://via.placeholder.com/400x400/800080/FFD700?text=Product';
     if (image.startsWith('http')) return image;
     return `${API_URL}/${image}`.replace(/([^:]\/)\/+/g, '$1');
+  };
+
+  const handleImageError = (e) => {
+    e.target.src = 'https://via.placeholder.com/400x400/800080/FFD700?text=Product';
   };
 
   const formatPrice = (price) => {

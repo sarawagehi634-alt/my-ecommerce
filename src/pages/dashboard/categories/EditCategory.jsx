@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   FiSave,
   FiX,
-  FiUpload,
   FiImage,
   FiFolder,
   FiLink
@@ -36,71 +35,100 @@ const EditCategory = () => {
   });
 
   /* ============================= */
-  /* جلب البيانات */
+  /* Fetch Category */
   /* ============================= */
 
-  useEffect(() => {
-    fetchCategory();
-    fetchParentCategories();
-  }, []);
+  const fetchCategory = useCallback(async () => {
 
-  const fetchCategory = async () => {
     try {
+
       const res = await categoryService.getCategory(id);
 
-      if (res?.status) {
+      if (res?.status || res?.data) {
+
         const cat = res.data;
 
         setFormData({
-          name: cat.name || "",
-          slug: cat.slug || "",
-          note: cat.note || "",
-          category_id: cat.category_id?.toString() || "",
+          name: cat?.name || "",
+          slug: cat?.slug || "",
+          note: cat?.note || "",
+          category_id: cat?.category_id?.toString() || "",
           image: null
         });
 
-        setCurrentImage(cat.image || "");
+        setCurrentImage(cat?.image || "");
+
       }
 
     } catch (err) {
-      toast.error("فشل تحميل القسم");
-    } finally {
-      setFetchLoading(false);
-    }
-  };
 
-  const fetchParentCategories = async () => {
+      toast.error("فشل تحميل القسم");
+
+    } finally {
+
+      setFetchLoading(false);
+
+    }
+
+  }, [id]);
+
+
+  /* ============================= */
+  /* Fetch Parent Categories */
+  /* ============================= */
+
+  const fetchParentCategories = useCallback(async () => {
+
     try {
 
       const res = await categoryService.getCategories({ perPage: 100 });
 
-      if (res?.status) {
-        const filtered = res.data.data.filter(
+      if (res?.status || res?.data) {
+
+        const data = res?.data?.data || [];
+
+        const filtered = data.filter(
           (cat) => cat.id !== Number(id)
         );
 
         setParentCategories(filtered);
+
       }
 
     } catch (err) {
-      console.log(err);
+
+      console.error(err);
+
     }
-  };
+
+  }, [id]);
+
+
+  useEffect(() => {
+
+    fetchCategory();
+    fetchParentCategories();
+
+  }, [fetchCategory, fetchParentCategories]);
+
 
   /* ============================= */
-  /* slug generator */
+  /* Generate Slug */
   /* ============================= */
 
   const generateSlug = (text) => {
+
     return text
       .toLowerCase()
       .trim()
       .replace(/[\s\W-]+/g, "-")
       .replace(/^-+|-+$/g, "");
+
   };
 
+
   /* ============================= */
-  /* change inputs */
+  /* Handle Change */
   /* ============================= */
 
   const handleChange = (e) => {
@@ -123,10 +151,12 @@ const EditCategory = () => {
       }));
 
     }
+
   };
 
+
   /* ============================= */
-  /* image upload */
+  /* Handle Image Upload */
   /* ============================= */
 
   const handleImageChange = (e) => {
@@ -152,10 +182,12 @@ const EditCategory = () => {
     };
 
     reader.readAsDataURL(file);
+
   };
 
+
   /* ============================= */
-  /* submit */
+  /* Submit */
   /* ============================= */
 
   const handleSubmit = async (e) => {
@@ -176,8 +208,14 @@ const EditCategory = () => {
       data.append("_method", "PUT");
       data.append("name", formData.name);
       data.append("slug", formData.slug);
-      data.append("note", formData.note);
-      data.append("category_id", formData.category_id);
+
+      if (formData.note) {
+        data.append("note", formData.note);
+      }
+
+      if (formData.category_id) {
+        data.append("category_id", formData.category_id);
+      }
 
       if (formData.image) {
         data.append("image", formData.image);
@@ -190,6 +228,7 @@ const EditCategory = () => {
         toast.success("تم تحديث القسم بنجاح");
 
         navigate("/dashboard/categories");
+
       }
 
     } catch (err) {
@@ -201,21 +240,28 @@ const EditCategory = () => {
       setLoading(false);
 
     }
+
   };
 
+
   /* ============================= */
-  /* loading skeleton */
+  /* Loading Skeleton */
   /* ============================= */
 
   if (fetchLoading) {
+
     return (
+
       <div className="p-6 space-y-4">
         <div className="h-10 bg-gray-200 animate-pulse rounded"></div>
         <div className="h-64 bg-gray-200 animate-pulse rounded"></div>
         <div className="h-40 bg-gray-200 animate-pulse rounded"></div>
       </div>
+
     );
+
   }
+
 
   /* ============================= */
   /* UI */
@@ -232,10 +278,15 @@ const EditCategory = () => {
         <div className="bg-white shadow rounded-xl p-6 mb-6 flex justify-between items-center">
 
           <div>
-            <h1 className="text-xl font-bold">تعديل القسم</h1>
+
+            <h1 className="text-xl font-bold">
+              تعديل القسم
+            </h1>
+
             <p className="text-gray-500 text-sm">
               تعديل بيانات القسم
             </p>
+
           </div>
 
           <div className="flex gap-3">
@@ -261,6 +312,7 @@ const EditCategory = () => {
 
         </div>
 
+
         {/* Form */}
 
         <form
@@ -269,7 +321,7 @@ const EditCategory = () => {
           className="space-y-6"
         >
 
-          {/* name */}
+          {/* Name */}
 
           <div className="bg-white p-6 rounded-xl shadow">
 
@@ -297,7 +349,8 @@ const EditCategory = () => {
 
           </div>
 
-          {/* parent */}
+
+          {/* Parent */}
 
           <div className="bg-white p-6 rounded-xl shadow">
 
@@ -312,19 +365,24 @@ const EditCategory = () => {
               className="w-full border rounded-lg p-3"
             >
 
-              <option value="">بدون</option>
+              <option value="">
+                بدون
+              </option>
 
               {parentCategories.map((cat) => (
+
                 <option key={cat.id} value={cat.id}>
                   {cat.name}
                 </option>
+
               ))}
 
             </select>
 
           </div>
 
-          {/* image */}
+
+          {/* Image */}
 
           <div className="bg-white p-6 rounded-xl shadow">
 
@@ -335,7 +393,7 @@ const EditCategory = () => {
             {currentImage && !imagePreview && (
 
               <img
-                src={`http://localhost:8000/${currentImage}`}
+                src={currentImage}
                 className="w-40 h-40 object-cover rounded-lg mb-4"
                 alt=""
               />
@@ -364,7 +422,9 @@ const EditCategory = () => {
       </div>
 
     </div>
+
   );
+
 };
 
 export default EditCategory;

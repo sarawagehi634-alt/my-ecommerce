@@ -1,7 +1,8 @@
+// DashboardHome.jsx
 import React, { useState, useEffect } from 'react';
 import { 
   FaBox, FaShoppingBag, FaUsers, FaMoneyBillWave, FaChartLine,
-  FaEye, FaCheckCircle, FaClock, FaSpinner, FaBan, FaSearch
+  FaEye, FaCheckCircle, FaClock, FaSpinner, FaBan
 } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import dashboardService from '../../services/dashboardService';
@@ -97,14 +98,14 @@ const DashboardHome = () => {
   useEffect(() => {
     fetchDashboardData();
     const interval = setInterval(() => {
-      toast.success('وصل طلب جديد!');
+      // يمكنك تحسين هذه الإشعارات لاحقًا لتجنب الـ toast المتكرر
       fetchDashboardData();
     }, 30000);
     return () => clearInterval(interval);
   }, []);
 
   // ==============================
-  // تطبيق البحث والفلترة والصفحات
+  // فلترة الطلبات والصفحات
   // ==============================
   const filteredOrders = recentOrders
     .filter(o => orderFilter === 'all' || o.status === orderFilter)
@@ -123,6 +124,7 @@ const DashboardHome = () => {
 
   return (
     <div className="p-4 md:p-6 bg-gray-50 min-h-screen" dir="rtl">
+      
       {/* رأس الصفحة */}
       <div className="flex items-center justify-between mb-8">
         <div>

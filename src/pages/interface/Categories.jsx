@@ -40,9 +40,9 @@ const Categories = () => {
       } else {
         setError('حدث خطأ أثناء تحميل الأقسام');
       }
-    } catch (error) {
-      console.error('خطأ في جلب الأقسام:', error);
-      setError(error.response?.data?.message || 'حدث خطأ أثناء تحميل الأقسام');
+    } catch (err) {
+      console.error('خطأ في جلب الأقسام:', err);
+      setError(err.response?.data?.message || 'حدث خطأ أثناء تحميل الأقسام');
       toast.error('فشل تحميل الأقسام');
     } finally {
       setLoading(false);
@@ -63,8 +63,8 @@ const Categories = () => {
 
   if (error) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center" dir="rtl">
-        <div className="text-center bg-white p-8 rounded-2xl shadow-lg max-w-md">
+      <div className="min-h-[60vh] flex items-center justify-center px-4" dir="rtl">
+        <div className="text-center bg-white p-8 rounded-2xl shadow-lg max-w-md w-full">
           <div className="text-red-500 mb-4">
             <svg className="w-16 h-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -84,7 +84,7 @@ const Categories = () => {
 
   return (
     <div className="min-h-screen py-12 bg-gradient-to-b from-gray-50 to-white" dir="rtl">
-      <div className="container-custom">
+      <div className="container-custom px-4 md:px-0">
         <div className="text-center mb-12">
           <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-yellow-400 rounded-2xl mx-auto mb-4 flex items-center justify-center">
             <FaTshirt className="w-10 h-10 text-white" />
@@ -96,30 +96,31 @@ const Categories = () => {
         </div>
 
         {categories.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {categories.map((category) => (
               <motion.div
                 key={category.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                whileHover={{ y: -5 }}
+                whileHover={{ y: -5, scale: 1.02 }}
                 transition={{ duration: 0.3 }}
               >
                 <Link
                   to={`/category/${category.id}`}
                   className="group relative bg-white rounded-2xl shadow-lg overflow-hidden block focus:outline-none focus:ring-2 focus:ring-purple-500 hover:shadow-xl transition-shadow"
+                  aria-label={`عرض قسم ${category.name}`}
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
                     <img
                       src={getCategoryImage(category.image)}
-                      alt={category.name}
+                      alt={category.name || 'قسم غير متوفر'}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       onError={handleImageError}
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent rounded-2xl" />
                     <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <h3 className="text-2xl font-bold text-white mb-2">{category.name}</h3>
+                      <h3 className="text-2xl font-bold text-white mb-2">{category.name || 'قسم غير متوفر'}</h3>
                       <p className="text-gray-200 mb-3">
                         {category.products_count?.toLocaleString('ar-EG') || 0} منتج
                       </p>

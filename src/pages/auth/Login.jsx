@@ -1,127 +1,129 @@
 // @ts-nocheck
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowLeft } from 'react-icons/fi';
+import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiArrowLeft } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import Button from '../../components/common/Button'; // الزرار الفخم اللي عملناه
-import Input from '../../components/common/Input';   // حقل الإدخال المطور
+import Button from '../../components/common/Button';
+import Input from '../../components/common/Input';
 
-const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const Register = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: ''
+  });
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState({});
-
-  const { login, loading: authLoading, isAuthenticated, isAdmin } = useAuth();
+  const { register, loading } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const from = location.state?.from?.pathname || '/';
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate(isAdmin ? '/dashboard' : from, { replace: true });
-    }
-  }, [isAuthenticated, isAdmin, navigate, from]);
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const success = await login({ email, password });
-    if (success && rememberMe) {
-      localStorage.setItem('remembered_email', email);
+    const success = await register(formData);
+    if (success) {
+      toast.success('مرحباً بكِ في عالم سوو للأزياء');
+      navigate('/');
     }
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col lg:flex-row" dir="rtl">
-      
-      {/* الجانب الأيسر: صورة فاشون كبيرة (تعطي واقعية وفخامة) */}
-      <div className="hidden lg:block lg:w-1/2 relative overflow-hidden bg-gray-100">
+    <div className="min-h-screen bg-white flex flex-col lg:flex-row-reverse" dir="rtl">
+      <div className="hidden lg:block lg:w-1/2 relative bg-gray-50">
         <img 
           src="https://unsplash.com" 
-          alt="Fashion Model" 
-          className="absolute inset-0 w-full h-full object-cover grayscale-[20%] hover:grayscale-0 transition-all duration-1000"
+          alt="Fashion Editorial" 
+          className="absolute inset-0 w-full h-full object-cover grayscale-[30%]"
         />
-        <div className="absolute inset-0 bg-black/10" />
-        <div className="absolute bottom-12 right-12 text-white">
-          <h2 className="text-5xl font-black tracking-tighter uppercase italic">SOO STYLE</h2>
-          <p className="text-sm tracking-[0.3em] uppercase mt-2 opacity-80">Spring Collection 2024</p>
+        <div className="absolute inset-0 bg-black/5" />
+        <div className="absolute top-12 left-12 text-white text-left">
+          <h2 className="text-6xl font-black tracking-tighter uppercase italic leading-none">Join Soo Style<br/>Elite</h2>
+          <p className="text-xs tracking-[0.4em] uppercase mt-4 font-bold opacity-90">Discover Our New Collection Exclusively</p>
         </div>
       </div>
 
-      {/* الجانب الأيمن: نموذج الدخول */}
-      <div className="flex-1 flex items-center justify-center p-8 lg:p-24">
-        <div className="w-full max-w-sm space-y-12">
-          
-          {/* Header */}
-          <div className="space-y-4">
-            <h1 className="text-3xl font-black tracking-tighter uppercase italic">تسجيل الدخول</h1>
-            <p className="text-xs tracking-widest text-gray-400 uppercase">الأناقة تبدأ من هنا</p>
+      <div className="flex-1 flex items-center justify-center p-8 lg:p-20">
+        <div className="w-full max-w-md space-y-10">
+          <div className="space-y-3">
+            <h1 className="text-3xl font-black tracking-tighter uppercase italic">إنشاء حساب جديد</h1>
+            <p className="text-[10px] tracking-[0.3em] text-gray-400 uppercase">ابدئي رحلتكِ في عالم الموضة الراقية</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <Input
+              label="الاسم الكامل"
+              name="name"
+              placeholder="NAME"
+              value={formData.name}
+              onChange={handleChange}
+              leftIcon={<FiUser />}
+              error={errors.name}
+            />
+
+            <Input
+              label="البريد الإلكتروني"
+              name="email"
+              type="email"
+              placeholder="EMAIL@EXAMPLE.COM"
+              value={formData.email}
+              onChange={handleChange}
+              leftIcon={<FiMail />}
+              error={errors.email}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input
-                label="البريد الإلكتروني"
-                type="email"
-                placeholder="EMAIL@EXAMPLE.COM"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                leftIcon={<FiMail />}
-                error={errors.email}
+                label="كلمة المرور"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleChange}
+                leftIcon={<FiLock />}
+                rightIcon={
+                  <button type="button" onClick={() => setShowPassword(!showPassword)}>
+                    {showPassword ? <FiEyeOff size={16}/> : <FiEye size={16}/>}
+                  </button>
+                }
               />
 
-              <div className="space-y-2">
-                <Input
-                  label="كلمة المرور"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  leftIcon={<FiLock />}
-                  rightIcon={
-                    <button type="button" onClick={() => setShowPassword(!showPassword)}>
-                      {showPassword ? <FiEyeOff /> : <FiEye />}
-                    </button>
-                  }
-                />
-                <div className="flex justify-end">
-                   <Link to="/forgot-password" size="sm" className="text-[10px] uppercase tracking-widest text-gray-400 hover:text-black">
-                     نسيتي كلمة المرور؟
-                   </Link>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="remember"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 accent-black border-gray-200"
+              <Input
+                label="تأكيد كلمة المرور"
+                name="password_confirmation"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={formData.password_confirmation}
+                onChange={handleChange}
+                leftIcon={<FiLock />}
               />
-              <label htmlFor="remember" className="text-[10px] uppercase tracking-widest text-gray-500 cursor-pointer">تذكريني</label>
             </div>
 
-            <div className="space-y-4">
+            <div className="pt-4 space-y-6">
               <Button 
                 fullWidth 
                 size="lg" 
-                isLoading={authLoading}
+                isLoading={loading}
                 type="submit"
               >
-                دخول <FiArrowLeft className="mr-2" />
+                إنشاء الحساب <FiArrowLeft className="mr-2" />
               </Button>
-              
-              <p className="text-center text-[10px] text-gray-400 uppercase tracking-widest">
-                ليس لديكِ حساب؟ {' '}
-                <Link to="/register" className="text-black font-black border-b border-black pb-0.5">
-                  انضمي إلينا الآن
-                </Link>
-              </p>
+
+              <div className="text-center">
+                <p className="text-[10px] text-gray-400 uppercase tracking-[0.2em]">
+                  لديكِ حساب بالفعل؟ {' '}
+                  <Link to="/login" className="text-black font-black border-b border-black pb-0.5 hover:text-gray-600 transition-colors">
+                    سجلي دخولكِ هنا
+                  </Link>
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-10 flex justify-center gap-8 opacity-20 grayscale scale-75">
+              <span className="text-[10px] font-black uppercase tracking-widest">Premium Quality Fabrics</span>
+              <span className="text-[10px] font-black uppercase tracking-widest">Secure Checkout</span>
             </div>
           </form>
         </div>
@@ -130,4 +132,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

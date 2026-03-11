@@ -10,23 +10,9 @@ import { FaStar, FaShoppingBag, FaTruck, FaHeart } from 'react-icons/fa';
 import homeService from '../../services/homeService';
 import toast from 'react-hot-toast';
 
-// أنيميشن للعناصر
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 }
-};
+const fadeInUp = { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.5 } };
+const staggerContainer = { animate: { transition: { staggerChildren: 0.1 } } };
 
-// أنيميشن للحاوية مع تأخير بين العناصر
-const staggerContainer = {
-  animate: {
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
-
-// قائمة المميزات
 const FEATURES = [
   { icon: FaShoppingBag, title: 'أحدث صيحات الموضة', desc: 'مجموعة منتقاة بعناية لتواكب الموضة العالمية' },
   { icon: FaHeart, title: 'مصممة بعناية', desc: 'تصاميم فريدة وأنيقة لكل المناسبات' },
@@ -41,9 +27,7 @@ const HomeFashion = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchHomeData();
-  }, []);
+  useEffect(() => { fetchHomeData(); }, []);
 
   const fetchHomeData = async () => {
     try {
@@ -54,10 +38,10 @@ const HomeFashion = () => {
         homeService.getNewArrivals(3),
         homeService.getHomeCategories(6)
       ]);
-      setFeaturedProducts(featured);
-      setBestSellers(best);
-      setNewArrivals(newArrivalsData);
-      setCategories(cats);
+      setFeaturedProducts(featured || []);
+      setBestSellers(best || []);
+      setNewArrivals(newArrivalsData || []);
+      setCategories(cats || []);
     } catch (error) {
       console.error('خطأ في جلب بيانات الصفحة الرئيسية:', error);
       toast.error('حدث خطأ في تحميل البيانات');
@@ -77,7 +61,6 @@ const HomeFashion = () => {
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-white rounded-full blur-3xl"></div>
           <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-white rounded-full blur-3xl"></div>
         </div>
-
         <div className="container-custom relative z-10 py-16 md:py-24">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
@@ -100,7 +83,7 @@ const HomeFashion = () => {
             <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, delay: 0.2 }} className="relative">
               <img
                 src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                alt="ملابس نسائية"
+                alt="مجموعة ملابس نسائية عصرية"
                 className="rounded-3xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500"
                 loading="eager"
               />
@@ -147,7 +130,7 @@ const HomeFashion = () => {
               </Link>
             </motion.div>
             <motion.div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6" variants={staggerContainer} initial="initial" whileInView="animate" viewport={{ once: true, amount: 0.3 }}>
-              {categories.map((category) => (
+              {categories.map(category => (
                 <motion.div key={category.id} variants={fadeInUp}>
                   <CategoryCard category={category} variant="grid" />
                 </motion.div>
@@ -171,7 +154,7 @@ const HomeFashion = () => {
               </Link>
             </motion.div>
             <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" variants={staggerContainer} initial="initial" whileInView="animate" viewport={{ once: true, amount: 0.3 }}>
-              {featuredProducts.map((product) => (
+              {featuredProducts.map(product => (
                 <motion.div key={product.id} variants={fadeInUp}>
                   <ProductCard product={product} />
                 </motion.div>
@@ -227,7 +210,7 @@ const HomeFashion = () => {
             <p className="text-gray-600">آلاف النساء جربن ملابسنا وأعجبن بها</p>
           </motion.div>
           <div className="grid md:grid-cols-3 gap-6">
-            {/* هنا ستأتي مراجعات العملاء من API */}
+            {/* يمكن لاحقاً إضافة مراجعات العملاء من API */}
           </div>
         </div>
       </section>

@@ -5,10 +5,9 @@ import {
   FaFacebookF, FaInstagram, FaTwitter, FaYoutube, 
   FaTiktok, FaWhatsapp, FaPinterestP
 } from 'react-icons/fa';
-import { FiMail, FiSend, FiArrowUpRight, FiGlobe } from 'react-icons/fi';
+import { FiSend, FiArrowUpRight, FiGlobe } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
-// تغيير اللوجو ليكون Minimalist أسود أو أبيض حسب الخلفية
 const logo = 'https://placehold.co';
 
 const FOOTER_SECTIONS = {
@@ -45,7 +44,7 @@ const FOOTER_SECTIONS = {
 const SOCIAL_ICONS = [
   { icon: FaInstagram, link: '#' },
   { icon: FaTiktok, link: '#' },
-  { icon: FaPinterestP, link: '#' }, // الفاشون بيحب بينترست جداً
+  { icon: FaPinterestP, link: '#' },
   { icon: FaFacebookF, link: '#' },
   { icon: FaWhatsapp, link: '#' },
 ];
@@ -59,11 +58,10 @@ const Footer = () => {
     if (!email) return toast.error('الرجاء إدخال البريد الإلكتروني');
     setLoading(true);
     try {
-      // محاكاة اشتراك
-      await new Promise(res => setTimeout(res, 1000));
+      await new Promise(res => setTimeout(res, 1000)); // محاكاة API
       toast.success('مرحباً بكِ في عالمنا!');
       setEmail('');
-    } catch (error) {
+    } catch {
       toast.error('حدث خطأ');
     }
     setLoading(false);
@@ -72,24 +70,32 @@ const Footer = () => {
   return (
     <footer className="bg-white border-t border-gray-100 text-gray-900 pt-20 pb-10">
       <div className="container mx-auto px-6">
-        
-        {/* الجزء العلوي: النشرة البريدية بتصميم "Minimal" */}
+
+        {/* الجزء العلوي: Newsletter */}
         <div className="grid lg:grid-cols-12 gap-12 pb-16 border-b border-gray-100">
           <div className="lg:col-span-5">
             <h3 className="text-2xl font-serif italic mb-4">انضمي إلى مجتمعنا</h3>
             <p className="text-gray-500 text-sm mb-6 max-w-md">
               اشتركي للحصول على إشعارات حصرية بأحدث صيحات الموضة والخصومات قبل أي شخص آخر.
             </p>
-            <form onSubmit={handleSubscribe} className="relative max-w-md group">
+            <form onSubmit={handleSubscribe} className="relative max-w-md">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="بريدك الإلكتروني"
-                className="w-full bg-transparent border-b-2 border-gray-200 py-3 pr-2 pl-12 focus:border-black outline-none transition-colors"
+                className="w-full bg-transparent border-b-2 border-gray-200 py-3 pr-12 pl-4 focus:border-black outline-none transition-colors"
               />
-              <button className="absolute left-0 top-1/2 -translate-y-1/2 hover:scale-110 transition-transform">
-                {loading ? '...' : <FiSend size={20} />}
+              <button
+                type="submit"
+                disabled={loading}
+                className="absolute left-0 top-1/2 -translate-y-1/2 p-2 hover:scale-110 transition-transform text-gray-700 disabled:opacity-50"
+              >
+                {loading ? (
+                  <span className="animate-pulse">⏳</span>
+                ) : (
+                  <FiSend size={20} />
+                )}
               </button>
             </form>
           </div>
@@ -103,7 +109,7 @@ const Footer = () => {
                 <ul className="space-y-4">
                   {section.links.map((link, i) => (
                     <li key={i}>
-                      <Link to={link.to} className="text-sm text-gray-600 hover:text-black flex items-center group gap-1">
+                      <Link to={link.to} className="text-sm text-gray-600 hover:text-black flex items-center gap-1 group">
                         {link.text}
                         <FiArrowUpRight className="opacity-0 group-hover:opacity-100 transition-opacity" size={12}/>
                       </Link>
@@ -115,7 +121,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* الجزء الأوسط: معلومات التواصل واللوجو */}
+        {/* الجزء الأوسط: Logo & Social */}
         <div className="py-12 flex flex-col lg:flex-row justify-between items-center gap-10">
           <div className="flex flex-col items-center lg:items-start gap-4">
             <img src={logo} className="h-10 grayscale hover:grayscale-0 transition-all cursor-pointer" alt="Logo" />
@@ -137,7 +143,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* الجزء السفلي: الحقوق والعملة */}
+        {/* الجزء السفلي: حقوق وعملة */}
         <div className="pt-8 border-t border-gray-50 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-6 text-[11px] font-medium text-gray-400 uppercase tracking-widest">
             <span>© {new Date().getFullYear()} Beauty Toma</span>
@@ -147,14 +153,14 @@ const Footer = () => {
           </div>
 
           <div className="flex gap-8">
-             {/* أيقونات دفع نظيفة (Placeholders) */}
-             <div className="flex items-center gap-4 opacity-30 grayscale tracking-tighter text-[10px] font-bold">
-                <span>VISA</span>
-                <span>MASTERCARD</span>
-                <span>CASH</span>
-             </div>
+            <div className="flex items-center gap-4 opacity-30 grayscale tracking-tighter text-[10px] font-bold">
+              <span>VISA</span>
+              <span>MASTERCARD</span>
+              <span>CASH</span>
+            </div>
           </div>
         </div>
+
       </div>
     </footer>
   );

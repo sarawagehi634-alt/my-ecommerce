@@ -4,8 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiArrowLeft } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import Button from '../../components/common/Button'; // الزرار الأسود الفخم
-import Input from '../../components/common/Input';   // الحقل النظيف اللي عملناه
+import Button from '../../components/common/Button';
+import Input from '../../components/common/Input';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -19,9 +19,7 @@ const Register = () => {
   const { register, loading } = useAuth();
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,8 +32,6 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col lg:flex-row-reverse" dir="rtl">
-      
-      {/* الجانب الأيمن: صورة إلهامية (Editorial Image) */}
       <div className="hidden lg:block lg:w-1/2 relative bg-gray-50">
         <img 
           src="https://unsplash.com" 
@@ -49,11 +45,8 @@ const Register = () => {
         </div>
       </div>
 
-      {/* الجانب الأيسر: نموذج التسجيل */}
       <div className="flex-1 flex items-center justify-center p-8 lg:p-20">
         <div className="w-full max-w-md space-y-10">
-          
-          {/* Header */}
           <div className="space-y-3">
             <h1 className="text-3xl font-black tracking-tighter uppercase italic">إنشاء حساب جديد</h1>
             <p className="text-[10px] tracking-[0.3em] text-gray-400 uppercase">ابدئي رحلتكِ في عالم الموضة الراقية</p>
@@ -127,13 +120,12 @@ const Register = () => {
                 </p>
               </div>
             </div>
-          </form>
 
-          {/* تذييل بسيط للفخامة */}
-          <div className="pt-10 flex justify-center gap-8 opacity-20 grayscale scale-75">
-             <span className="text-[10px] font-black uppercase tracking-widest">Premium Quality Fabrics</span>
-             <span className="text-[10px] font-black uppercase tracking-widest">Secure Checkout</span>
-          </div>
+            <div className="pt-10 flex justify-center gap-8 opacity-20 grayscale scale-75">
+              <span className="text-[10px] font-black uppercase tracking-widest">Premium Quality Fabrics</span>
+              <span className="text-[10px] font-black uppercase tracking-widest">Secure Checkout</span>
+            </div>
+          </form>
         </div>
       </div>
     </div>

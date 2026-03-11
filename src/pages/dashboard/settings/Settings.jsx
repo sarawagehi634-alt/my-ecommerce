@@ -54,6 +54,19 @@ const Settings = () => {
   };
 
   const handleSave = async (type) => {
+    // تحقق خاص بكلمة المرور
+    if (type === 'password') {
+      if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+        return toast.error('جميع حقول كلمة المرور مطلوبة');
+      }
+      if (passwordData.newPassword !== passwordData.confirmPassword) {
+        return toast.error('كلمة المرور الجديدة وتأكيدها غير متطابقين');
+      }
+      if (passwordData.newPassword.length < 6) {
+        return toast.error('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+      }
+    }
+
     setLoading(true);
     try {
       await new Promise(res => setTimeout(res, 800)); // محاكاة API
@@ -98,6 +111,7 @@ const Settings = () => {
           </aside>
 
           <main className="lg:col-span-3 bg-white rounded-2xl shadow-lg p-6 space-y-6">
+            
             {/* الملف الشخصي */}
             {activeTab === 'profile' && (
               <section>
@@ -126,6 +140,7 @@ const Settings = () => {
                       label={field === 'name' ? 'الاسم الكامل' : field === 'email' ? 'البريد الإلكتروني' : field === 'phone' ? 'رقم الجوال' : 'العنوان'}
                       name={field}
                       value={profileData[field]}
+                      placeholder={field === 'name' ? 'ادخل الاسم الكامل' : field === 'email' ? 'ادخل البريد الإلكتروني' : field === 'phone' ? 'ادخل رقم الجوال' : 'ادخل العنوان'}
                       onChange={handleChange(setProfileData)}
                     />
                   ))}
@@ -137,7 +152,7 @@ const Settings = () => {
                     value={profileData.bio}
                     onChange={handleChange(setProfileData)}
                     rows={4}
-                    className="input-field w-full rounded-lg border-gray-300"
+                    className="input-field w-full rounded-lg border-gray-300 resize-none"
                     placeholder="اكتب نبذة عنك..."
                   />
                 </div>
@@ -158,6 +173,7 @@ const Settings = () => {
                       label={field === 'currentPassword' ? 'كلمة المرور الحالية' : field === 'newPassword' ? 'كلمة المرور الجديدة' : 'تأكيد كلمة المرور الجديدة'}
                       name={field}
                       type="password"
+                      placeholder={field === 'currentPassword' ? 'ادخل كلمة المرور الحالية' : field === 'newPassword' ? 'ادخل كلمة المرور الجديدة' : 'تأكيد كلمة المرور'}
                       value={passwordData[field]}
                       onChange={handleChange(setPasswordData)}
                     />
@@ -184,7 +200,7 @@ const Settings = () => {
                           {key==='emailNotifications'?'استلام الإشعارات على البريد الإلكتروني': key==='orderUpdates'?'إشعارات عند الطلبات': key==='promotions'?'استلام العروض والخصومات':'إشعارات مهمة عن النظام'}
                         </p>
                       </div>
-                      <input type="checkbox" name={key} checked={value} onChange={handleChange(setNotifications)} className="toggle-checkbox" />
+                      <input type="checkbox" aria-label={key} name={key} checked={value} onChange={handleChange(setNotifications)} className="toggle-checkbox" />
                     </label>
                   ))}
                 </div>
@@ -199,10 +215,10 @@ const Settings = () => {
               <section>
                 <h2 className="text-xl font-bold mb-6">التفضيلات</h2>
                 <div className="grid md:grid-cols-2 gap-4 max-w-md">
-                  <Input label="اللغة" name="language" value={preferences.language} onChange={handleChange(setPreferences)} placeholder="ar / en" />
-                  <Input label="العملة" name="currency" value={preferences.currency} onChange={handleChange(setPreferences)} placeholder="SAR / USD" />
-                  <Input label="المنطقة الزمنية" name="timezone" value={preferences.timezone} onChange={handleChange(setPreferences)} placeholder="Asia/Riyadh" />
-                  <Input label="صيغة التاريخ" name="dateFormat" value={preferences.dateFormat} onChange={handleChange(setPreferences)} placeholder="DD/MM/YYYY" />
+                  <Input label="اللغة" name="language" value={preferences.language} placeholder="ar / en" onChange={handleChange(setPreferences)} />
+                  <Input label="العملة" name="currency" value={preferences.currency} placeholder="SAR / USD" onChange={handleChange(setPreferences)} />
+                  <Input label="المنطقة الزمنية" name="timezone" value={preferences.timezone} placeholder="Asia/Riyadh" onChange={handleChange(setPreferences)} />
+                  <Input label="صيغة التاريخ" name="dateFormat" value={preferences.dateFormat} placeholder="DD/MM/YYYY" onChange={handleChange(setPreferences)} />
                 </div>
                 <div className="flex justify-end mt-6">
                   <Button onClick={() => handleSave('التفضيلات')} isLoading={loading} leftIcon={<FiSave />}>حفظ التفضيلات</Button>
@@ -215,9 +231,9 @@ const Settings = () => {
               <section>
                 <h2 className="text-xl font-bold mb-6">إعدادات الشحن</h2>
                 <div className="grid md:grid-cols-2 gap-4 max-w-md">
-                  <Input label="الوزن الافتراضي (كجم)" name="defaultWeight" type="number" value={shipping.defaultWeight} onChange={handleChange(setShipping)} />
-                  <Input label="الحد الأدنى للشحن المجاني" name="freeShippingThreshold" type="number" value={shipping.freeShippingThreshold} onChange={handleChange(setShipping)} />
-                  <Input label="تكلفة الشحن" name="shippingCost" type="number" value={shipping.shippingCost} onChange={handleChange(setShipping)} />
+                  <Input label="الوزن الافتراضي (كجم)" name="defaultWeight" type="number" min={0} step={0.1} value={shipping.defaultWeight} onChange={handleChange(setShipping)} />
+                  <Input label="الحد الأدنى للشحن المجاني" name="freeShippingThreshold" type="number" min={0} value={shipping.freeShippingThreshold} onChange={handleChange(setShipping)} />
+                  <Input label="تكلفة الشحن" name="shippingCost" type="number" min={0} value={shipping.shippingCost} onChange={handleChange(setShipping)} />
                   <label className="flex items-center gap-2 mt-4">
                     <input type="checkbox" name="internationalShipping" checked={shipping.internationalShipping} onChange={handleChange(setShipping)} className="toggle-checkbox" />
                     <span>الشحن الدولي متاح</span>

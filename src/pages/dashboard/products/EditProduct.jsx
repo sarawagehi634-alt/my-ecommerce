@@ -68,11 +68,11 @@ const EditProduct = () => {
           images: []
         });
         setCurrentMainImage(product.main_image || '');
-        setCurrentImages(product.images?.map(img => img.url) || []);
+        setCurrentImages(product.images?.map(img => ({ id: img.id, url: img.url })) || []);
       }
     } catch (error) {
       console.error('خطأ في جلب المنتج:', error);
-      toast.error('حدث خطأ أثناء جلب بيانات المنتج');
+      toast.error('حدث خطأ أثناء جلب بيانات القطعة');
       navigate('/dashboard/products');
     } finally {
       setFetchLoading(false);
@@ -93,19 +93,42 @@ const EditProduct = () => {
     setFormData(prev => ({ ...prev, [name]: type === 'number' ? (value === '' ? '' : Number(value)) : value }));
   };
 
+  // تعديل الصورة الرئيسية
   const handleMainImageChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) return toast.error('حجم الصورة يجب ألا يتجاوز 2 ميجابايت');
-    if (!file.type.startsWith('image/')) return toast.error('الرجاء اختيار صورة صالحة');
-    setFormData(prev => ({ ...prev, main_image: file }));
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('حجم الصورة يجب ألا يتجاوز 2 ميجابايت');
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('الرجاء اختيار صورة صالحة');
+      return;
+    }
+
+    if (newMainImagePreview) {
+      URL.revokeObjectURL(newMainImagePreview);
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      main_image: file
+    }));
+
     setNewMainImagePreview(URL.createObjectURL(file));
   };
 
+  // إضافة صور جديدة
   const handleImagesChange = (e) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
-    if (formData.images.length + files.length > 5) return toast.error('يمكنك إضافة 5 صور كحد أقصى');
+
+    if (currentImages.length + formData.images.length + files.length > 5) {
+      toast.error('يمكنك إضافة 5 صور كحد أقصى');
+      return;
+    }
 
     const validFiles = files.filter(file => {
       if (file.size > 2 * 1024 * 1024) { toast.error(`حجم الصورة ${file.name} كبير`); return false; }
@@ -114,6 +137,7 @@ const EditProduct = () => {
     });
 
     if (!validFiles.length) return;
+
     setFormData(prev => ({ ...prev, images: [...prev.images, ...validFiles] }));
     setNewImagePreviews(prev => [...prev, ...validFiles.map(f => URL.createObjectURL(f))]);
   };
@@ -134,41 +158,47 @@ const EditProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name.trim()) return toast.error('اسم المنتج مطلوب');
+    if (!formData.name.trim()) return toast.error('اسم القطعة مطلوب');
     if (!formData.price || formData.price <= 0) return toast.error('السعر يجب أن يكون أكبر من 0');
-    if (!formData.category_id) return toast.error('يرجى اختيار قسم للمنتج');
+    if (!formData.category_id) return toast.error('يرجى اختيار قسم للقطعة');
 
     setLoading(true);
     try {
       const fd = new FormData();
       fd.append('_method', 'PUT');
+
       Object.entries(formData).forEach(([key, value]) => {
         if (value !== null && key !== 'images' && key !== 'main_image') fd.append(key, value);
       });
+
       if (formData.main_image) fd.append('main_image', formData.main_image);
       formData.images.forEach((img, i) => fd.append(`images[${i}]`, img));
 
       const response = await productService.updateProduct(id, fd);
       if (response?.status) {
-        toast.success('تم تحديث المنتج بنجاح');
+        toast.success('تم تحديث القطعة بنجاح');
         navigate('/dashboard/products');
       }
     } catch (error) {
-      console.error('خطأ في تحديث المنتج:', error);
+      console.error('خطأ في تحديث القطعة:', error);
       if (error.response?.data?.errors) Object.values(error.response.data.errors).flat().forEach(msg => toast.error(msg));
-      else toast.error(error.message || 'حدث خطأ أثناء تحديث المنتج');
+      else toast.error(error.message || 'حدث خطأ أثناء تحديث القطعة');
     } finally {
       setLoading(false);
     }
   };
 
-  const getImageUrl = (path) => path?.startsWith('http') ? path : `${API_URL}/${path}`;
+  const getImageUrl = (path) => {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `${API_URL}/${path.replace(/^\/+/, '')}`;
+  };
 
   if (fetchLoading) return (
     <div className="flex justify-center items-center h-64">
       <div className="relative">
         <div className="w-12 h-12 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
-        <span className="sr-only">جاري تحميل بيانات المنتج...</span>
+        <span className="sr-only">جاري تحميل بيانات القطعة...</span>
       </div>
     </div>
   );
@@ -178,8 +208,8 @@ const EditProduct = () => {
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">تعديل المنتج الفاشون</h1>
-            <p className="text-gray-600">قم بتعديل بيانات المنتج حسب الحاجة</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">تعديل القطعة الفاشون</h1>
+            <p className="text-gray-600">قم بتعديل بيانات القطعة حسب الحاجة</p>
           </div>
           <div className="flex gap-3">
             <Button variant="outline" onClick={() => navigate('/dashboard/products')} leftIcon={<FiX />}>إلغاء</Button>
@@ -188,13 +218,14 @@ const EditProduct = () => {
         </div>
 
         <form id="product-form" onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-6" noValidate>
+          
           {/* المعلومات الأساسية */}
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
             <div className="bg-gradient-to-l from-primary-600 to-skin-600 px-6 py-4">
               <h2 className="text-xl font-bold text-white">المعلومات الأساسية</h2>
             </div>
             <div className="p-6 grid md:grid-cols-2 gap-6">
-              <Input label="اسم المنتج" name="name" value={formData.name} onChange={handleChange} required placeholder="مثال: تيشيرت رجالي" />
+              <Input label="اسم القطعة" name="name" value={formData.name} onChange={handleChange} required placeholder="مثال: تيشيرت رجالي" />
               <Input label="SKU" name="sku" value={formData.sku} onChange={handleChange} placeholder="PRD-001" />
               <Input label="السعر" type="number" name="price" value={formData.price} onChange={handleChange} required min="0" step="0.01" />
               <Input label="سعر المقارنة" type="number" name="compare_price" value={formData.compare_price} onChange={handleChange} min="0" step="0.01" />
@@ -227,7 +258,7 @@ const EditProduct = () => {
           {/* الصور */}
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
             <div className="bg-gradient-to-l from-primary-600 to-skin-600 px-6 py-4">
-              <h2 className="text-xl font-bold text-white">صور المنتج</h2>
+              <h2 className="text-xl font-bold text-white">صور القطعة</h2>
             </div>
             <div className="p-6 space-y-6">
               {/* الصورة الرئيسية */}
@@ -258,20 +289,20 @@ const EditProduct = () => {
                 </div>
               </div>
 
-              {/* الصور الإضافية */}
+              {/* الصور الإضافية الحالية */}
               {currentImages.length > 0 && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">الصور الإضافية الحالية</label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     {currentImages.map((img, index) => (
                       <div key={index} className="relative group">
-                        <img src={getImageUrl(img)} alt={`صورة ${index + 1}`} className="w-full h-24 object-cover rounded-lg" onError={(e) => { e.target.style.display = 'none'; }} />
+                        <img src={getImageUrl(img.url)} alt={`صورة ${index + 1}`} className="w-full h-24 object-cover rounded-lg" onError={(e) => { e.target.style.display = 'none'; }} />
                         <button
                           type="button"
                           onClick={async () => {
                             if (!window.confirm('هل أنت متأكد من حذف هذه الصورة؟')) return;
                             try {
-                              await productService.deleteProductImage(id, img);
+                              await productService.deleteProductImage(id, img.id);
                               toast.success('تم حذف الصورة بنجاح');
                               setCurrentImages(prev => prev.filter((_, i) => i !== index));
                             } catch (error) {

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   FiHome, FiPackage, FiShoppingBag, FiUsers, FiSettings, FiLogOut,
-  FiChevronDown, FiChevronUp, FiBarChart2, FiStar, FiTag, FiTruck, FiMail, FiLayers
+  FiChevronDown, FiChevronUp, FiBarChart2, FiStar, FiTag, FiTruck, FiMail
 } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import categoryService from '../../../services/categoryService';
@@ -11,7 +11,7 @@ import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Sidebar = ({ isOpen, onClose }) => {
-  const [openMenus, setOpenMenus] = useState(['المنتجات']);
+  const [openMenus, setOpenMenus] = useState(['المتجر']);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   
@@ -29,7 +29,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       const response = await categoryService.getCategories({ perPage: 10 });
       if (response?.status) setCategories(response.data?.data || []);
     } catch (error) {
-      console.error('Error fetching categories');
+      console.error('Error fetching categories', error);
     } finally {
       setLoading(false);
     }
@@ -66,7 +66,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     setOpenMenus(prev => prev.includes(title) ? prev.filter(i => i !== title) : [...prev, title]);
   };
 
-  const isActive = (path) => path && location.pathname === path.split('?')[0];
+  const isActive = (path) => path && location.pathname.startsWith(path.split('?')[0]);
 
   return (
     <>
@@ -87,7 +87,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         {/* Branding Area */}
         <div className="p-8 border-b border-gray-50">
           <Link to="/dashboard" className="block">
-            <h2 className="text-xl font-black tracking-tighter uppercase italic">SOO STYLE </h2>
+            <h2 className="text-xl font-black tracking-tighter uppercase italic">SOO STYLE</h2>
             <p className="text-[9px] tracking-[0.3em] text-gray-400 uppercase font-bold">Control Panel</p>
           </Link>
           
@@ -97,7 +97,7 @@ const Sidebar = ({ isOpen, onClose }) => {
              </div>
              <div className="overflow-hidden">
                <p className="text-xs font-bold text-gray-900 truncate">{user?.name || 'Admin'}</p>
-               <p className="text-[10px] text-gray-400 truncate">{user?.email}</p>
+               <p className="text-[10px] text-gray-400 truncate">{user?.email || 'admin@example.com'}</p>
              </div>
           </div>
         </div>
@@ -129,15 +129,15 @@ const Sidebar = ({ isOpen, onClose }) => {
                       <item.icon size={18} />
                       <span className="text-xs font-bold uppercase tracking-widest">{item.title}</span>
                     </div>
-                    {openMenus.includes(item.title) ? <FiChevronUp size={14}/> : <FiChevronDown size={14}/>}
+                    {openMenus.includes(item.title) ? <FiChevronUp size={14}/> : <FiChevronDown size={14}/> }
                   </button>
                   
                   <AnimatePresence>
                     {openMenus.includes(item.title) && (
-                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden mr-4 border-r border-gray-100 mt-1">
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden pl-6 border-r border-gray-100 mt-1">
                         {item.submenu.map(sub => (
-                          <Link key={sub.title} to={sub.path} className={`block px-6 py-2.5 text-[11px] font-medium transition-colors ${isActive(sub.path) ? 'text-black font-bold' : 'text-gray-400 hover:text-black'}`}>
-                            {sub.text || sub.title}
+                          <Link key={sub.title} to={sub.path} className={`block py-2.5 text-[11px] font-medium transition-colors ${isActive(sub.path) ? 'text-black font-bold' : 'text-gray-400 hover:text-black'}`}>
+                            {sub.title}
                           </Link>
                         ))}
                       </motion.div>

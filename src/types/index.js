@@ -1,52 +1,48 @@
 /**
  * ============================================
- * Fashion Store Types
+ * Fashion Store Types (JS Doc / Type Definitions)
  * ============================================
  */
 
-
 /**
- * Product Image
+ * ==================== Product Images ====================
  * @typedef {Object} ProductImage
  * @property {number} id
  * @property {number} product_id
- * @property {string} image
- * @property {string} image_url
- * @property {number} sort_order
+ * @property {string} image - اسم الملف
+ * @property {string} image_url - رابط الصورة الكامل
+ * @property {number} sort_order - ترتيب الصورة
  */
 
-
 /**
- * Variant Value (Size / Color)
+ * ==================== Variant Value ====================
+ * (مثل الحجم أو اللون)
  * @typedef {Object} VariantValue
  * @property {number} id
- * @property {string} value
- * @property {number} quantity
- * @property {number} price
+ * @property {string} value - القيمة (مثلاً: "M" أو "Red")
+ * @property {number} quantity - الكمية المتاحة
+ * @property {number} price - السعر الخاص بهذا المتغير
  */
 
-
 /**
- * Product Variant
+ * ==================== Product Variant ====================
  * @typedef {Object} ProductVariant
  * @property {number} id
- * @property {string} name
+ * @property {string} name - اسم المتغير (مثل "الحجم" أو "اللون")
  * @property {number} product_id
- * @property {VariantValue[]} values
+ * @property {VariantValue[]} values - القيم المتاحة
  */
 
-
 /**
- * Product Attribute
+ * ==================== Product Attribute ====================
  * @typedef {Object} ProductAttribute
  * @property {number} id
- * @property {string} name
- * @property {string} value
+ * @property {string} name - اسم الخاصية (مثل "القماش")
+ * @property {string} value - القيمة (مثل "قطن")
  */
 
-
 /**
- * Product
+ * ==================== Product ====================
  * @typedef {Object} Product
  * @property {number} id
  * @property {string} sku
@@ -77,9 +73,8 @@
  * @property {ProductAttribute[]} attributes
  */
 
-
 /**
- * Category
+ * ==================== Category ====================
  * @typedef {Object} Category
  * @property {number} id
  * @property {string} name
@@ -87,12 +82,11 @@
  * @property {string} description
  * @property {string} image
  * @property {number} products_count
- * @property {Category[]} children
+ * @property {Category[]} [children] - الأقسام الفرعية
  */
 
-
 /**
- * Brand
+ * ==================== Brand ====================
  * @typedef {Object} Brand
  * @property {number} id
  * @property {string} name
@@ -100,35 +94,32 @@
  * @property {string} logo
  */
 
-
 /**
- * Wishlist Item
+ * ==================== Wishlist Item ====================
  * @typedef {Object} WishlistItem
  * @property {number} id
  * @property {string} name
  * @property {number} price
  * @property {string} main_image
- * @property {string} color
- * @property {string} size
+ * @property {string} [color]
+ * @property {string} [size]
  * @property {string} added_at
  */
 
-
 /**
- * Cart Item
+ * ==================== Cart Item ====================
  * @typedef {Object} CartItem
  * @property {number} id
  * @property {string} name
  * @property {number} price
  * @property {number} quantity
- * @property {string} size
- * @property {string} color
+ * @property {string} [size]
+ * @property {string} [color]
  * @property {string} main_image
  */
 
-
 /**
- * Cart
+ * ==================== Cart ====================
  * @typedef {Object} Cart
  * @property {CartItem[]} items
  * @property {number} total
@@ -137,9 +128,8 @@
  * @property {number} tax
  */
 
-
 /**
- * User
+ * ==================== User ====================
  * @typedef {Object} User
  * @property {number} id
  * @property {string} name
@@ -147,9 +137,8 @@
  * @property {string} phone
  */
 
-
 /**
- * Address
+ * ==================== Address ====================
  * @typedef {Object} Address
  * @property {number} id
  * @property {string} city
@@ -157,9 +146,8 @@
  * @property {string} postal_code
  */
 
-
 /**
- * Order
+ * ==================== Order ====================
  * @typedef {Object} Order
  * @property {number} id
  * @property {string} order_number
@@ -170,9 +158,8 @@
  * @property {CartItem[]} items
  */
 
-
 /**
- * Review
+ * ==================== Review ====================
  * @typedef {Object} Review
  * @property {number} id
  * @property {number} product_id

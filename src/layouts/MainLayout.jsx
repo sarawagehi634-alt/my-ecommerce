@@ -32,7 +32,6 @@ const MainLayout = () => {
         </AnimatePresence>
       </main>
 
-      {/* تم تصليح القفلة هنا */}
       <footer className="mt-auto border-t border-gray-50">
         <Footer />
       </footer> 
@@ -41,7 +40,7 @@ const MainLayout = () => {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="fixed bottom-8 left-8 z-40 bg-black text-white p-3 rounded-full shadow-2xl opacity-0 lg:opacity-100 hidden lg:flex items-center justify-center"
+        className="fixed bottom-8 left-8 z-40 bg-black text-white p-3 rounded-full shadow-2xl hidden lg:flex items-center justify-center"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18" />

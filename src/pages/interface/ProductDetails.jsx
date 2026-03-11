@@ -1,3 +1,4 @@
+// ProductDetailsFashion.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
@@ -6,9 +7,8 @@ import Loader from '../../components/common/Loader';
 import ProductCard from '../../components/cards/ProductCard';
 import { 
   FaShoppingCart, FaHeart, FaMinus, FaPlus, FaTruck, FaShieldAlt, FaUndo, 
-  FaStar, FaStarHalf, FaRegStar, FaCheckCircle, FaBox 
+  FaStar, FaStarHalf, FaRegStar, FaBox 
 } from 'react-icons/fa';
-import { MdVerified } from 'react-icons/md';
 import toast from 'react-hot-toast';
 import productService from '../../services/productService';
 
@@ -33,7 +33,6 @@ const ProductDetailsFashion = () => {
       const response = await productService.getInterfaceProduct(id);
       if (response?.status) {
         setProduct(response.data);
-
         if (response.data?.category_id) {
           const filters = { category_id: response.data.category_id, per_page: 4, page: 1 };
           const relatedResponse = await productService.getInterfaceProducts(filters);
@@ -99,6 +98,7 @@ const ProductDetailsFashion = () => {
   };
 
   if (loading) return <Loader text="جاري تحميل المنتج..." />;
+
   if (!product) return (
     <div className="min-h-screen flex items-center justify-center" dir="rtl">
       <div className="text-center">

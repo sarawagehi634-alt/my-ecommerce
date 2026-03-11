@@ -7,12 +7,11 @@ import {
   FiCheckCircle,
   FiXCircle,
   FiTruck,
-  FiChevronLeft,
   FiArrowUpRight
 } from "react-icons/fi";
 import { motion } from "framer-motion";
 
-/* ألوان براند فاشون راقية */
+/* CONFIG لكل حالة طلب */
 const STATUS_CONFIG = {
   pending: { color: "text-amber-600 bg-amber-50", icon: FiClock, text: "قيد المراجعة", progress: 20 },
   processing: { color: "text-blue-600 bg-blue-50", icon: FiPackage, text: "تجهيز الطلب", progress: 45 },
@@ -27,7 +26,7 @@ const OrderCard = ({ order }) => {
   const StatusIcon = status.icon;
 
   const getImageUrl = (image) => {
-    if (!image) return "https://placeholder.com";
+    if (!image) return "https://via.placeholder.com/80x100?text=No+Image";
     return image.startsWith("http") ? image : `${import.meta.env.VITE_API_URL || "http://localhost:8000"}/storage/${image}`;
   };
 
@@ -37,7 +36,8 @@ const OrderCard = ({ order }) => {
       className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-500 mb-6"
     >
       <Link to={`/order/${order.id}`} className="block">
-        {/* Top Header - الستايل النظيف */}
+
+        {/* Header */}
         <div className="px-6 py-4 flex items-center justify-between border-b border-gray-50 bg-gray-50/30">
           <div className="flex items-center gap-4">
             <span className="text-[11px] font-black uppercase tracking-widest text-gray-400">Order Ref.</span>
@@ -51,8 +51,8 @@ const OrderCard = ({ order }) => {
 
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-            
-            {/* عرض صور الملابس بشكل "Stacked" شيك */}
+
+            {/* صور المنتجات */}
             <div className="md:col-span-4">
               <div className="flex items-center">
                 <div className="flex -space-x-4">
@@ -60,7 +60,7 @@ const OrderCard = ({ order }) => {
                     <div key={idx} className="relative group">
                       <img
                         src={getImageUrl(item.product?.main_image || item.image)}
-                        alt="Product"
+                        alt={item.product?.name || "Product"}
                         className="w-16 h-20 object-cover rounded-md border-2 border-white shadow-sm transition-transform group-hover:-translate-y-2"
                       />
                     </div>
@@ -78,7 +78,7 @@ const OrderCard = ({ order }) => {
               </div>
             </div>
 
-            {/* تفاصيل السعر والوقت */}
+            {/* السعر والوقت */}
             <div className="md:col-span-5 grid grid-cols-2 gap-4 border-r border-gray-50 pr-4">
               <div>
                 <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-1">Date</p>
@@ -94,7 +94,7 @@ const OrderCard = ({ order }) => {
               </div>
             </div>
 
-            {/* زر الانتقال السريع */}
+            {/* زر التفاصيل */}
             <div className="md:col-span-3 flex justify-end">
               <div className="flex items-center gap-2 text-gray-900 font-bold text-sm group-hover:gap-4 transition-all">
                 <span>تفاصيل الطلب</span>
@@ -105,7 +105,7 @@ const OrderCard = ({ order }) => {
             </div>
           </div>
 
-          {/* شريط التقدم النحيف (Slim Progress Bar) */}
+          {/* Progress Bar */}
           {order.status !== "cancelled" && (
             <div className="mt-8">
               <div className="flex justify-between text-[9px] uppercase tracking-widest text-gray-400 mb-2">

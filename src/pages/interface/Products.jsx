@@ -1,9 +1,9 @@
+// ProductsFashion.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProductCard from '../../components/cards/ProductCard';
 import Loader from '../../components/common/Loader';
 import { 
-  FaFilter, 
   FaTimes, 
   FaChevronLeft, 
   FaChevronRight 
@@ -30,8 +30,8 @@ const ProductsFashion = () => {
   const [categories, setCategories] = useState([]);
   const [pagination, setPagination] = useState({ currentPage: 1, lastPage: 1, total: 0, perPage: 12 });
 
-  useEffect(() => { fetchCategories(); }, []);
-  useEffect(() => { fetchProducts(1); }, [filters]);
+  useEffect(() => fetchCategories(), []);
+  useEffect(() => fetchProducts(1), [filters]);
 
   const fetchProducts = async (page = 1) => {
     setLoading(true);
@@ -70,13 +70,14 @@ const ProductsFashion = () => {
 
   const handleFilterChange = (e) => setFilters(prev => ({ ...prev, [e.target.name]: e.target.value }));
   const clearFilters = () => setFilters({ category: '', priceMin: '', priceMax: '', sort: 'newest' });
-  const handlePageChange = (page) => { fetchProducts(page); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  const handlePageChange = (page) => { if(page >= 1 && page <= pagination.lastPage){ fetchProducts(page); window.scrollTo({ top: 0, behavior: 'smooth' }); } };
 
   if (loading && products.length === 0) return <Loader text="جاري تحميل المنتجات..." />;
 
   return (
     <div className="min-h-screen py-12 bg-gradient-to-b from-pink-50 to-white" dir="rtl">
       <div className="container-custom">
+
         {/* Header */}
         <div className="text-center mb-12">
           <div className="w-24 h-24 bg-gradient-to-br from-pink-500 to-pink-300 rounded-3xl mx-auto mb-4 flex items-center justify-center shadow-lg">
@@ -97,6 +98,7 @@ const ProductsFashion = () => {
         </button>
 
         <div className="flex flex-col lg:flex-row gap-8">
+
           {/* Filters */}
           <div className={`lg:w-1/4 ${showFilters ? 'block' : 'hidden lg:block'}`}>
             <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
@@ -106,6 +108,7 @@ const ProductsFashion = () => {
                 <button onClick={() => setShowFilters(false)} className="lg:hidden text-gray-500 hover:text-gray-700"><FaTimes /></button>
               </div>
 
+              {/* التصنيف */}
               <div className="mb-6">
                 <h3 className="font-semibold mb-3">التصنيف</h3>
                 <select name="category" value={filters.category} onChange={handleFilterChange}
@@ -115,6 +118,7 @@ const ProductsFashion = () => {
                 </select>
               </div>
 
+              {/* السعر */}
               <div className="mb-6">
                 <h3 className="font-semibold mb-3">السعر (ج.م)</h3>
                 <div className="flex gap-2">
@@ -125,6 +129,7 @@ const ProductsFashion = () => {
                 </div>
               </div>
 
+              {/* الترتيب */}
               <div>
                 <h3 className="font-semibold mb-3">الترتيب</h3>
                 <select name="sort" value={filters.sort} onChange={handleFilterChange}

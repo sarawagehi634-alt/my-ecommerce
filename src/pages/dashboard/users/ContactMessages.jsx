@@ -13,11 +13,11 @@ const ContactMessages = () => {
   const [loading, setLoading] = useState(true);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
-  const [replyText, setReplyText] = useState('');
   const [showReplyModal, setShowReplyModal] = useState(false);
+  const [replyText, setReplyText] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [darkMode, setDarkMode] = useState(false);
 
-  // جلب الرسائل
   const fetchMessages = async () => {
     setLoading(true);
     try {
@@ -33,25 +33,22 @@ const ContactMessages = () => {
 
   useEffect(() => { fetchMessages(); }, []);
 
-  // فلترة الرسائل حسب البحث
   const filteredMessages = messages.filter(m =>
     m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     m.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     m.subject.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // عرض تفاصيل الرسالة
   const handleViewMessage = async (message) => {
     setSelectedMessage(message);
     setShowViewModal(true);
-    
+
     if (message.status === 'unread') {
       await contactService.updateMessageStatus(message.id, 'read');
       fetchMessages();
     }
   };
 
-  // حذف رسالة
   const handleDeleteMessage = async (id) => {
     if (window.confirm('هل أنت متأكد من حذف هذه الرسالة؟')) {
       const result = await contactService.deleteMessage(id);
@@ -63,7 +60,6 @@ const ContactMessages = () => {
     }
   };
 
-  // الرد على الرسالة
   const handleSendReply = () => {
     if (!replyText.trim()) {
       toast.error('الرجاء كتابة الرد');
@@ -74,7 +70,6 @@ const ContactMessages = () => {
     toast.success('تم فتح البريد الإلكتروني');
   };
 
-  // تنسيق التاريخ
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
@@ -91,40 +86,48 @@ const ContactMessages = () => {
   };
 
   return (
-    <div className="p-4 md:p-6 bg-gray-50 min-h-screen" dir="rtl">
+    <div className={`${darkMode ? 'bg-gray-900 text-gray-200' : 'bg-gray-50 text-gray-900'} min-h-screen p-4 md:p-6`} dir="rtl">
+      
       {/* رأس الصفحة */}
       <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+          <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3 mb-2">
             <FaEnvelope className="text-primary-600" /> رسائل الاتصال
           </h1>
-          <p className="text-gray-600 flex items-center gap-2 text-sm">
+          <p className="text-sm flex items-center gap-2 text-gray-500 dark:text-gray-400">
             <span className="inline-block w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
             وضع التطوير - تخزين محلي
           </p>
         </div>
+
         <div className="flex gap-2 items-center">
           <input
             type="text"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="بحث عن الرسائل..."
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500"
+            className={`${darkMode ? 'bg-gray-800 text-gray-200 border-gray-700' : 'bg-white text-gray-900 border-gray-300'} px-4 py-2 rounded-lg focus:outline-none focus:border-primary-500`}
           />
           <button
             onClick={fetchMessages}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:border-primary-500 transition-all"
+            className={`${darkMode ? 'bg-gray-800 border-gray-700 text-gray-200 hover:border-primary-500' : 'bg-white border-gray-200 text-gray-900 hover:border-primary-500'} flex items-center gap-2 px-4 py-2 rounded-lg transition-all`}
           >
             <FaSync className={loading ? 'animate-spin' : ''} /> تحديث
+          </button>
+          <button
+            onClick={() => setDarkMode(prev => !prev)}
+            className={`${darkMode ? 'bg-gray-700 text-gray-200' : 'bg-gray-200 text-gray-800'} px-4 py-2 rounded-lg`}
+          >
+            {darkMode ? 'الوضع الفاتح' : 'الوضع الداكن'}
           </button>
         </div>
       </div>
 
       {/* جدول الرسائل */}
-      <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+      <div className={`${darkMode ? 'bg-gray-800 text-gray-200' : 'bg-white text-gray-900'} rounded-2xl shadow-lg overflow-hidden`}>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gradient-to-l from-gray-50 to-gray-100">
+            <thead className={`${darkMode ? 'bg-gray-700' : 'bg-gradient-to-l from-gray-50 to-gray-100'}`}>
               <tr>
                 <th className="text-right py-4 px-6">الحالة</th>
                 <th className="text-right py-4 px-6">المرسل</th>
@@ -148,12 +151,12 @@ const ContactMessages = () => {
                 <tr>
                   <td colSpan={6} className="text-center py-12">
                     <FaEnvelope className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                    <p className="text-gray-500">لا توجد رسائل</p>
+                    <p className="text-gray-500 dark:text-gray-400">لا توجد رسائل</p>
                   </td>
                 </tr>
               ) : (
                 filteredMessages.map((message) => (
-                  <tr key={message.id} className="border-b hover:bg-gray-50">
+                  <tr key={message.id} className={`border-b ${darkMode ? 'border-gray-700 hover:bg-gray-700' : 'hover:bg-gray-50'}`}>
                     <td className="py-4 px-6">
                       {message.status === 'unread' ? (
                         <FaEnvelopeClosed className="w-5 h-5 text-primary-600" title="غير مقروء" />
@@ -161,28 +164,13 @@ const ContactMessages = () => {
                         <FaEnvelopeOpen className="w-5 h-5 text-gray-400" title="مقروء" />
                       )}
                     </td>
-                    <td className="py-4 px-6 flex items-center gap-2">
-                      <FaUser className="text-gray-400" /> {message.name}
-                    </td>
+                    <td className="py-4 px-6 flex items-center gap-2"><FaUser className="text-gray-400" /> {message.name}</td>
                     <td className="py-4 px-6" dir="ltr">{message.email}</td>
-                    <td className="py-4 px-6 flex items-center gap-2">
-                      <MdSubject className="text-gray-400" /> {message.subject}
-                    </td>
-                    <td className="py-4 px-6 flex items-center gap-2">
-                      <FaCalendarAlt className="text-gray-400" />
-                      <span className="text-sm">{formatDate(message.created_at)}</span>
-                    </td>
+                    <td className="py-4 px-6 flex items-center gap-2"><MdSubject className="text-gray-400" /> {message.subject}</td>
+                    <td className="py-4 px-6 flex items-center gap-2"><FaCalendarAlt className="text-gray-400" /> {formatDate(message.created_at)}</td>
                     <td className="py-4 px-6 flex gap-2">
-                      <button
-                        onClick={() => handleViewMessage(message)}
-                        className="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-50 rounded-lg"
-                        title="عرض"
-                      ><FaEye /></button>
-                      <button
-                        onClick={() => handleDeleteMessage(message.id)}
-                        className="text-red-600 hover:text-red-800 p-2 hover:bg-red-50 rounded-lg"
-                        title="حذف"
-                      ><FaTrashAlt /></button>
+                      <button onClick={() => handleViewMessage(message)} className="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-50 rounded-lg" title="عرض"><FaEye /></button>
+                      <button onClick={() => handleDeleteMessage(message.id)} className="text-red-600 hover:text-red-800 p-2 hover:bg-red-50 rounded-lg" title="حذف"><FaTrashAlt /></button>
                     </td>
                   </tr>
                 ))
@@ -193,7 +181,7 @@ const ContactMessages = () => {
 
         {/* إحصائيات */}
         {messages.length > 0 && (
-          <div className="p-4 border-t bg-gray-50 flex gap-4 text-sm">
+          <div className={`${darkMode ? 'bg-gray-700 text-gray-200 border-gray-600' : 'bg-gray-50 text-gray-900 border-t'} p-4 flex gap-4 text-sm`}>
             <span>إجمالي الرسائل: <strong>{messages.length}</strong></span>
             <span>غير مقروء: <strong className="text-primary-600">{messages.filter(m => m.status === 'unread').length}</strong></span>
             <span>مقروء: <strong className="text-green-600">{messages.filter(m => m.status === 'read').length}</strong></span>
@@ -205,8 +193,8 @@ const ContactMessages = () => {
       {showViewModal && selectedMessage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setShowViewModal(false)} />
-          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-gradient-to-l from-primary-600 to-skin-600 px-6 py-4 text-white flex justify-between">
+          <div className={`${darkMode ? 'bg-gray-800 text-gray-200' : 'bg-white text-gray-900'} relative rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto`}>
+            <div className="sticky top-0 px-6 py-4 flex justify-between items-center text-white bg-gradient-to-l from-primary-600 to-skin-600">
               <h2 className="text-xl font-bold">تفاصيل الرسالة</h2>
               <button onClick={() => setShowViewModal(false)} className="hover:text-gray-200"><FaTimes /></button>
             </div>
@@ -234,23 +222,17 @@ const ContactMessages = () => {
 
               <div>
                 <p className="text-sm text-gray-500 mb-2">الموضوع</p>
-                <p className="font-semibold p-3 bg-gray-50 rounded-lg flex items-center gap-2"><MdSubject className="text-primary-600" /> {selectedMessage.subject}</p>
+                <p className="font-semibold p-3 bg-gray-50 dark:bg-gray-700 rounded-lg flex items-center gap-2"><MdSubject className="text-primary-600" /> {selectedMessage.subject}</p>
               </div>
 
               <div>
                 <p className="text-sm text-gray-500 mb-2">الرسالة</p>
-                <div className="p-4 bg-gray-50 rounded-lg whitespace-pre-line"><MdMessage className="w-5 h-5 text-primary-600 mb-2" /> {selectedMessage.message}</div>
+                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg whitespace-pre-line"><MdMessage className="w-5 h-5 text-primary-600 mb-2" /> {selectedMessage.message}</div>
               </div>
 
               <div className="flex gap-3 justify-end">
-                <button
-                  onClick={() => setShowReplyModal(true)}
-                  className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 flex items-center gap-2"
-                ><FaReply /> رد</button>
-                <button
-                  onClick={() => setShowViewModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                >إغلاق</button>
+                <button onClick={() => setShowReplyModal(true)} className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 flex items-center gap-2"><FaReply /> رد</button>
+                <button onClick={() => setShowViewModal(false)} className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">إغلاق</button>
               </div>
             </div>
           </div>
@@ -260,18 +242,18 @@ const ContactMessages = () => {
       {showReplyModal && selectedMessage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setShowReplyModal(false)} />
-          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-lg">
-            <div className="sticky top-0 bg-gradient-to-l from-primary-600 to-skin-600 px-6 py-4 text-white flex justify-between">
+          <div className={`${darkMode ? 'bg-gray-800 text-gray-200' : 'bg-white text-gray-900'} relative rounded-2xl shadow-xl w-full max-w-lg`}>
+            <div className="sticky top-0 px-6 py-4 flex justify-between items-center text-white bg-gradient-to-l from-primary-600 to-skin-600">
               <h2 className="text-xl font-bold">رد على الرسالة</h2>
               <button onClick={() => setShowReplyModal(false)} className="hover:text-gray-200"><FaTimes /></button>
             </div>
             <div className="p-6">
-              <p className="mb-4 text-gray-700">الرد على: <span className="font-semibold">{selectedMessage.email}</span></p>
+              <p className="mb-4 text-gray-700 dark:text-gray-300">الرد على: <span className="font-semibold">{selectedMessage.email}</span></p>
               <textarea
                 value={replyText}
                 onChange={(e) => setReplyText(e.target.value)}
                 rows={6}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-primary-500 resize-none mb-4"
+                className={`${darkMode ? 'bg-gray-700 text-gray-200 border-gray-600' : 'bg-white text-gray-900 border-gray-200'} w-full px-4 py-3 rounded-xl focus:outline-none focus:border-primary-500 resize-none mb-4`}
                 placeholder="اكتب ردك هنا..."
               />
               <div className="flex gap-3">

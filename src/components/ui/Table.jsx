@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useMemo, useState } from 'react';
-import { FiChevronLeft, FiChevronRight, FiChevronsLeft, FiChevronsRight, FiArrowUp, FiArrowDown } from 'react-icons/fi';
+import { FiChevronLeft, FiChevronRight, FiArrowUp, FiArrowDown } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function Table({
@@ -44,7 +44,6 @@ function Table({
     <div className="bg-white border border-gray-100 overflow-hidden rounded-sm">
       <div className="overflow-x-auto">
         <table className="w-full border-collapse">
-          {/* HEADER - تصميم هادئ وراقي */}
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50/50">
               {columns.map((column) => (
@@ -71,7 +70,6 @@ function Table({
             </tr>
           </thead>
 
-          {/* BODY */}
           <tbody className="divide-y divide-gray-50">
             <AnimatePresence>
               {sortedData.length > 0 ? (
@@ -105,7 +103,6 @@ function Table({
         </table>
       </div>
 
-      {/* PAGINATION - Minimalist Style */}
       {pagination && pagination.totalPages > 1 && (
         <div className="flex items-center justify-between px-8 py-6 border-t border-gray-50 bg-white">
           <div className="text-[10px] uppercase tracking-widest font-bold text-gray-400">

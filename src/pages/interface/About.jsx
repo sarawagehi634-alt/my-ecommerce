@@ -157,7 +157,7 @@ const About = () => {
                     </p>
                     <p className="text-gray-600 mr-7">{b.address}</p>
                     <p className="text-gray-500 text-sm mr-7 flex items-center gap-2" dir="ltr">
-                      <FaPhone className="text-xs"/> {b.phone}
+                      <FaPhone className="text-xs"/> {b.phone || '+20 12 3456 7890'}
                     </p>
                   </div>
                 ))}

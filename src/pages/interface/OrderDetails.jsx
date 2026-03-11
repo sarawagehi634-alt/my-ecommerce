@@ -45,6 +45,8 @@ const STATUS_ICON = {
   refunded: FiXCircle
 };
 
+const ORDER_STEPS = ['pending', 'processing', 'shipped', 'delivered'];
+
 const translatePaymentMethod = (method) => {
   const methods = {
     bank_transfer: 'تحويل بنكي',
@@ -68,6 +70,7 @@ const OrderDetailsFashion = () => {
       setLoading(true);
       const response = await orderService.getUserOrder(id);
       if (response?.status) setOrder(response.data);
+      else throw new Error('الطلب غير موجود');
     } catch (error) {
       console.error(error);
       toast.error('حدث خطأ أثناء تحميل الطلب');
@@ -106,12 +109,11 @@ const OrderDetailsFashion = () => {
   );
 
   const StatusIcon = STATUS_ICON[order.status] || FiPackage;
+  const subtotal = order.items?.reduce((acc, item) => acc + (item.subtotal || 0), 0) || 0;
 
   return (
     <div className="min-h-screen py-12 bg-pink-50" dir="rtl">
       <div className="container mx-auto px-4 max-w-4xl">
-
-        {/* رأس الصفحة */}
         <div className="mb-6">
           <Link
             to="/orders"
@@ -122,26 +124,33 @@ const OrderDetailsFashion = () => {
           </Link>
         </div>
 
-        {/* بطاقة الطلب */}
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-          {/* حالة الطلب */}
-          <div className={`p-6 ${STATUS_COLORS[order.status] || 'bg-gray-100'} flex flex-wrap items-center justify-between gap-4`}>
-            <div className="flex items-center gap-3">
-              <StatusIcon className="w-8 h-8" />
-              <div>
-                <h2 className="text-xl font-bold">{STATUS_TEXT[order.status] || order.status}</h2>
-                <p className="text-sm opacity-90">آخر تحديث: {formatDate(order.updated_at)}</p>
-              </div>
-            </div>
-            <div className="text-left">
-              <p className="text-3xl font-bold text-purple-700">{order.total_amount?.toLocaleString('ar-SA')} ر.س</p>
+
+          {/* Timeline حالة الطلب */}
+          <div className="p-6">
+            <h2 className="text-xl font-bold text-purple-700 mb-4">حالة الطلب</h2>
+            <div className="flex items-center justify-between">
+              {ORDER_STEPS.map((step, index) => {
+                const StepIcon = STATUS_ICON[step] || FiPackage;
+                const isCompleted = ORDER_STEPS.indexOf(order.status) >= index;
+                return (
+                  <div key={step} className="flex-1 flex flex-col items-center relative">
+                    <div className={`w-12 h-12 flex items-center justify-center rounded-full ${isCompleted ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-600'} z-10`}>
+                      <StepIcon className="w-6 h-6" />
+                    </div>
+                    {index < ORDER_STEPS.length - 1 && (
+                      <div className={`absolute top-5 right-0 w-full h-1 ${isCompleted ? 'bg-purple-600' : 'bg-gray-300'}`} style={{ zIndex: 0 }}></div>
+                    )}
+                    <span className="mt-2 text-sm text-center">{STATUS_TEXT[step]}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          {/* معلومات الطلب */}
+          {/* تفاصيل الطلب */}
           <div className="p-6 space-y-6">
 
-            {/* رقم الطلب والتاريخ */}
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-500">رقم الطلب</p>
@@ -153,7 +162,6 @@ const OrderDetailsFashion = () => {
               </div>
             </div>
 
-            {/* المنتجات */}
             <div>
               <h3 className="text-lg font-bold mb-4 text-purple-700">الملابس</h3>
               <div className="space-y-4">
@@ -161,7 +169,7 @@ const OrderDetailsFashion = () => {
                   <div key={item.id} className="flex flex-wrap items-center gap-4 border-b pb-4 last:border-0 hover:bg-pink-50 transition-colors rounded-xl p-2">
                     <img
                       src={getImageUrl(item.product?.main_image)}
-                      alt={item.product?.name || item.product_name}
+                      alt={item.product?.name || item.product_name || 'منتج'}
                       className="w-24 h-24 object-cover rounded-xl shadow-sm"
                       onError={(e)=>{ e.target.src='https://via.placeholder.com/100x100?text=Clothes'; }}
                       loading="lazy"
@@ -183,19 +191,15 @@ const OrderDetailsFashion = () => {
               </div>
             </div>
 
-            {/* ملخص المبالغ */}
-            <div className="border-t border-gray-200 pt-4">
-              <div className="space-y-2">
-                <div className="flex justify-between"><span className="text-gray-600">المجموع الفرعي</span><span className="font-semibold">{order.total_amount?.toLocaleString('ar-SA')} ر.س</span></div>
-                <div className="flex justify-between"><span className="text-gray-600">الشحن</span><span className="font-semibold text-green-600">مجاني</span></div>
-                <div className="flex justify-between text-lg font-bold border-t border-gray-200 pt-2 mt-2">
-                  <span>الإجمالي</span>
-                  <span className="text-purple-700">{order.total_amount?.toLocaleString('ar-SA')} ر.س</span>
-                </div>
+            <div className="border-t border-gray-200 pt-4 space-y-2">
+              <div className="flex justify-between"><span className="text-gray-600">المجموع الفرعي</span><span className="font-semibold">{subtotal.toLocaleString('ar-SA')} ر.س</span></div>
+              <div className="flex justify-between"><span className="text-gray-600">الشحن</span><span className="font-semibold text-green-600">مجاني</span></div>
+              <div className="flex justify-between text-lg font-bold border-t border-gray-200 pt-2 mt-2">
+                <span>الإجمالي</span>
+                <span className="text-purple-700">{order.total_amount?.toLocaleString('ar-SA')} ر.س</span>
               </div>
             </div>
 
-            {/* أزرار الإجراءات */}
             <div className="border-t border-gray-200 pt-6 flex flex-wrap gap-4">
               <button
                 onClick={handlePrint}
@@ -210,6 +214,7 @@ const OrderDetailsFashion = () => {
                 <FiDownload className="w-5 h-5" /> تحميل PDF
               </button>
             </div>
+
           </div>
         </div>
       </div>

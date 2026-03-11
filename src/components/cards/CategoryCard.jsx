@@ -4,13 +4,6 @@ import { Link } from "react-router-dom";
 import { FiArrowLeft, FiHeart } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 
-/**
- * التعديلات لتحويل التصميم لـ "واقعي":
- * 1. إضافة Skeleton Loading ناعم.
- * 2. استخدام نظام الـ Typo العصري (Bold & Minimalist).
- * 3. تحويل الـ Hover ليكون تفاعلي مع خلفية ناعمة.
- */
-
 const CategoryCard = ({
   category,
   variant = "grid",
@@ -23,9 +16,8 @@ const CategoryCard = ({
   const [imageError, setImageError] = useState(false);
   const [isFavorite, setIsFavorite] = useState(isFavorited);
 
-  // استخراج رابط الصورة من الـ API بشكل ذكي
   const getImageUrl = () => {
-    if (imageError || !category.image) return "https://placeholder.com";
+    if (imageError || !category.image) return "https://via.placeholder.com/300x400?text=No+Image";
     return category.image.startsWith("http")
       ? category.image
       : `${import.meta.env.VITE_API_URL || "http://localhost:8000"}/storage/${category.image}`;
@@ -38,7 +30,6 @@ const CategoryCard = ({
     if (onFavorite) onFavorite(category.id);
   };
 
-  /* ================= MODERN GRID (THE REAL FASHION LOOK) ================= */
   if (variant === "grid") {
     return (
       <motion.div
@@ -53,7 +44,6 @@ const CategoryCard = ({
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
-            {/* الصورة الأساسية مع Zoom ناعم */}
             <motion.img
               src={getImageUrl()}
               alt={category.name}
@@ -61,11 +51,8 @@ const CategoryCard = ({
               loading={lazyLoad ? "lazy" : "eager"}
               onError={() => setImageError(true)}
             />
-
-            {/* طبقة تظليل ذكية (Gradient Overlay) */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-            {/* أيقونة المفضلة - مكانها احترافي */}
             <button
               onClick={handleFavorite}
               className="absolute top-4 right-4 z-10 p-2.5 rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white hover:text-red-500 transition-all duration-300"
@@ -73,7 +60,6 @@ const CategoryCard = ({
               <FiHeart className={`w-5 h-5 ${isFavorite ? "fill-red-500 text-red-500" : ""}`} />
             </button>
 
-            {/* تفاصيل القسم بتصميم "Minimal" */}
             <div className="absolute inset-x-0 bottom-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
               <div className="flex flex-col gap-1">
                 <span className="text-xs uppercase tracking-widest text-white/80 font-medium">Collection</span>
@@ -96,7 +82,6 @@ const CategoryCard = ({
               </div>
             </div>
 
-            {/* عداد المنتجات - شكل Badge احترافي */}
             {showProductCount && (
               <div className="absolute top-4 left-4 text-[10px] uppercase font-black bg-black text-white px-2 py-1 tracking-tighter">
                 {category.products_count || 0} Pieces
@@ -108,7 +93,6 @@ const CategoryCard = ({
     );
   }
 
-  /* ================= LIST DESIGN (FOR SEARCH/MOBILE) ================= */
   return (
     <Link to={`/category/${category.id}`} className="group">
       <div className="flex items-center gap-4 p-2 transition-all hover:bg-gray-50 rounded-xl">

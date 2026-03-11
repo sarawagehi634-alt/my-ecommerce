@@ -26,7 +26,7 @@ const DashboardLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // حماية المسار بذكاء
+  // حماية المسار
   useEffect(() => {
     if (initialized && !isAdmin) {
       toast.error('دخول غير مصرح به');
@@ -39,7 +39,7 @@ const DashboardLayout = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans selection:bg-black selection:text-white">
       
-      {/* Top Header - Slim & Sophisticated */}
+      {/* Top Header */}
       <header className="h-16 border-b border-gray-100 bg-white/80 backdrop-blur-md sticky top-0 z-50 px-6 flex items-center justify-between">
         <div className="flex items-center gap-8">
           <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 hover:bg-gray-50 rounded-full">
@@ -53,13 +53,11 @@ const DashboardLayout = () => {
         </div>
 
         <div className="flex items-center gap-6">
-          {/* Notifications Icon */}
           <button className="relative p-2 text-gray-400 hover:text-black transition-colors">
             <FiBell size={18} />
             <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-black rounded-full border border-white"></span>
           </button>
 
-          {/* User Info Card */}
           <div className="flex items-center gap-3 pl-4 border-l border-gray-100">
             <div className="hidden sm:block text-right">
               <p className="text-[11px] font-black uppercase tracking-widest leading-none mb-1">{user?.name || 'Admin'}</p>
@@ -74,7 +72,7 @@ const DashboardLayout = () => {
 
       <div className="flex flex-1 overflow-hidden">
         
-        {/* Desktop Sidebar - Minimalist Editorial Style */}
+        {/* Desktop Sidebar */}
         <aside className="hidden lg:flex flex-col w-72 border-l border-gray-50 bg-white">
           <nav className="flex-1 px-6 py-10 space-y-2">
             {NAVIGATION_ITEMS.map(item => (
@@ -107,7 +105,7 @@ const DashboardLayout = () => {
           </div>
         </aside>
 
-        {/* Mobile Menu Drawer (Framer Motion) */}
+        {/* Mobile Sidebar */}
         <AnimatePresence>
           {sidebarOpen && (
             <>
@@ -129,10 +127,9 @@ const DashboardLayout = () => {
           )}
         </AnimatePresence>
 
-        {/* Main Content Area - Airy & Professional */}
+        {/* Main Content */}
         <main className="flex-1 overflow-y-auto bg-[#fafafa] p-6 lg:p-12">
           <div className="max-w-7xl mx-auto">
-            {/* Page Header (يمكنك استخدامه داخل الـ Outlet لاحقاً) */}
             <header className="mb-10">
                <h2 className="text-[10px] uppercase tracking-[0.4em] text-gray-400 font-black mb-2">Management</h2>
                <h3 className="text-3xl font-serif italic text-black">لوحة التحكم المركزية</h3>
